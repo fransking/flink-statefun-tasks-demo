@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flink-statefun-config
+  namespace: flink-statefun-tasks-demo
+  labels:
+    app: flink-statefun
+data:
+  module.yaml: |-
+    version: "3.0"
+    module:
+      meta:
+        type: remote
+      spec:
+        endpoints:
+        - endpoint:
+            meta:
+              kind: http
+            spec:
+              functions: demo/worker
+              urlPathTemplate: http://worker:8085
+              maxNumBatchRequests: 1000
+        ingresses:
+          - ingress:
+              meta:
+                type: io.statefun.kafka/ingress
+                id: demo/worker
+              spec:
+                address: kafka:9092
+                consumerGroupId: flink-cluster-id
+                topics:
+                  - topic: statefun.tasks.demo.requests
+                    valueType: io.statefun_tasks.types/statefun_tasks.TaskRequest
+                    targets:
+                      - demo/worker
+                  - topic: statefun.tasks.demo.actions
+                    valueType: io.statefun_tasks.types/statefun_tasks.TaskActionRequest
+                    targets:
+                      - demo/worker
+        egresses:
+          - egress:
+              meta:
+                type: io.statefun.kafka/egress
+                id: demo/kafka-generic-egress
+              spec:
+                address: kafka:9092
+                deliverySemantic:
+                  type: at-least-once
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flink-statefun-jobmanager
+  namespace: flink-statefun-tasks-demo
+  labels:
+      app: flink-statefun
+      component: jobmanager
+spec:
+  type: NodePort
+  ports:
+    - name: rpc
+      port: 6123
+    - name: blob-server
+      port: 6124
+    - name: webui
+      port: 8081
+      nodePort: 30081
+  selector:
+      app: flink-statefun
+      component: jobmanager
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flink-statefun-jobmanager
+  namespace: flink-statefun-tasks-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flink-statefun
+      component: jobmanager
+  template:
+    metadata:
+      labels:
+        app: flink-statefun
+        component: jobmanager
+    spec:
+      containers:
+      - name: jobmanager
+        image: apache/flink-statefun:3.2.0
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: ROLE
+            value: master
+          - name: MASTER_HOST
+            value: flink-statefun-jobmanager
+        ports:
+          - containerPort: 6123
+          - containerPort: 6124
+          - containerPort: 8081
+        volumeMounts:
+          - name: flink-statefun-config-volume
+            mountPath: /opt/statefun/modules/tasks/
+      volumes:
+        - name: flink-statefun-config-volume
+          configMap:
+            name: flink-statefun-config
+            items:
+            - key: module.yaml
+              path: module.yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flink-statefun-taskmanager
+  namespace: flink-statefun-tasks-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flink-statefun
+      component: taskmanager
+  template:
+    metadata:
+      labels:
+        app: flink-statefun
+        component: taskmanager
+    spec:
+      containers:
+      - name: taskmanager
+        image: apache/flink-statefun:3.2.0
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: ROLE
+            value: worker
+          - name: MASTER_HOST
+            value: flink-statefun-jobmanager
+        ports:
+          - containerPort: 6121
+          - containerPort: 6122
+        volumeMounts:
+          - name: flink-statefun-config-volume
+            mountPath: /opt/statefun/modules/tasks/
+      volumes:
+        - name: flink-statefun-config-volume
+          configMap:
+            name: flink-statefun-config
+            items:
+            - key: module.yaml
+              path: module.yaml
