@@ -4,7 +4,10 @@
   "description": "Flink Statefun Tasks Demo",
   "license": "Apache-2.0",
   "author": "Frans King",
-  "scripts": {},
+  "scripts": {
+    "clean": "rimraf website/dist",
+    "build-dev": "npm run clean & webpack --config webpack.dev.js --progress"
+  },
   "dependencies": {
     "classnames": "^2.3.2",
     "core-js": "^3.29.0",
@@ -21,6 +24,11 @@
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "2.8.4",
     "sass": "^1.58.3",
-    "web-vitals": "^3.1.1"
+    "web-vitals": "^3.1.1",
+    "rimraf": "^4.4.1",
+    "webpack": "^5.8.0",
+    "webpack-dev-server": "^4.11.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-merge": "^5.8.0"
   }
 }
