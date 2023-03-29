@@ -1,12 +1,11 @@
 const {merge} = require('webpack-merge');
 const common = require('./webpack.common.js');
-const webpack = require('webpack')
 
 module.exports = merge(common(), {
     mode: 'development',
     devtool: 'eval-cheap-module-source-map',
     output: {
-
+        filename: '[name].[contenthash].js'
     },
     stats: {
         errorDetails: true
@@ -24,6 +23,17 @@ module.exports = merge(common(), {
             progress: true,
             overlay: true
         },
-        hot: true
+        hot: true,
+        watchFiles: {
+            options: {
+              usePolling: true,
+              ignored: /node_modules/
+            }
+        }
+    },
+    watchOptions: {
+        aggregateTimeout: 200,
+        poll: 500,
+        ignored: /node_modules/
     }
 });

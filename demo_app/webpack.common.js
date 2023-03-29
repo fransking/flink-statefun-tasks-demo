@@ -1,4 +1,6 @@
-const path = require('path')
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = () => ({
     entry: {
@@ -7,7 +9,13 @@ module.exports = () => ({
     output: {
         path: path.join(__dirname, 'website', 'dist')
     },
-    plugins: [],
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: 'website/index_template.html',
+            filename: 'index.html'
+        }),
+        new MiniCssExtractPlugin()
+    ],
     module: {
         rules: [
             {
@@ -19,7 +27,20 @@ module.exports = () => ({
                 options: {
                     presets: ['@babel/preset-env', '@babel/preset-react']
                 }
+            },
+            {
+                test: /\.scss$/,
+                include: [
+                    path.join(__dirname, 'website')
+                ],
+                use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"]
             }
+        ]
+    },
+    resolve: {
+        modules: [
+            path.resolve('./website/js'),
+            'node_modules'
         ]
     }
 })
