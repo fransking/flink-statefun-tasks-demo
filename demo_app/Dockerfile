@@ -6,7 +6,7 @@ COPY requirements.txt /app
 RUN pip install -r /app/requirements.txt
 
 COPY py_files/ /app/py_files/
-COPY website/ /app/website/
+COPY website/dist/ /app/website/
 
 WORKDIR /app
 
