@@ -11,15 +11,15 @@ export default function Layout() {
                 <div className="col-lg-6 mx-auto">
                   <p className="lead mb-4">Write simple Python functions and deploy them as stateful tasks that can be chained together into workflows, making full use of Flink's state management, orchestration and fault tolerance.</p>
                   <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                    <a href="https://github.com/fransking/flink-statefun-tasks" target="_blank" className="btn btn-outline-primary btn-lg px-4">View on Github</a>
+                    <a href="https://github.com/fransking/flink-statefun-tasks-demo" target="_blank" className="btn btn-outline-primary btn-lg px-4">View on Github</a>
                     <a href="https://fransking.github.io/flink-statefun-tasks/" target="_blank" className="btn btn-outline-secondary btn-lg px-4">Read the docs</a>
                   </div>
                 </div>
               </div>
-
+              
               <div className="b-example-divider"></div>
 
-              <Feature title="Worker set up">
+              <Feature title="On the worker...">
                 <Feature.Blurb>
                   Create a <a href="https://fransking.github.io/flink-statefun-tasks/api/generated/statefun_tasks.FlinkTasks.html" target="_blank">FlinkTasks</a> object 
                   matching the set up in <a href="https://github.com/fransking/flink-statefun-tasks-demo/blob/main/k8s/03-flink.yaml" target="_blank">module.yaml</a>.
@@ -41,28 +41,7 @@ tasks = FlinkTasks(
                 </Feature.Code>
               </Feature>
 
-              <div className="b-example-divider"></div>
-
-              <Feature title="Creating a task">
-                <Feature.Blurb>
-                  Tasks are declared using <b>@tasks.bind</b> and they remain ordinary Python functions that can be called directly.
-                </Feature.Blurb>
-                <Feature.Code>
-{
-`
-@tasks.bind()
-def multiply(a, b):
-  return a * b
-
-print(multiply(3, 2))
-`
-}
-                </Feature.Code>
-              </Feature>
-
-              <div className="b-example-divider"></div>
-
-              <Feature title="Client set up">
+              <Feature title="On the client...">
                 <Feature.Blurb>
                   Create a <a href="https://fransking.github.io/flink-statefun-tasks/api/generated/statefun_tasks.client.FlinkTasksClientFactory.html#statefun_tasks.client.FlinkTasksClientFactory" target="_blank">FlinkTasksClient</a> matching 
                   the ingress configuation in <a href="https://github.com/fransking/flink-statefun-tasks-demo/blob/main/k8s/03-flink.yaml" target="_blank">module.yaml</a>.
@@ -85,11 +64,31 @@ flink_client = FlinkTasksClientFactory.get_client(
 
               <div className="b-example-divider"></div>
 
-              <Feature title="Call the task" actions={true}>
+              <Feature title="Creating a task">
                 <Feature.Blurb>
-                  To call the task first create a function signature with the name Python module and function name as on the worker.  The function implementation can be ignored.
+                  Tasks are declared on the worker using <b>@tasks.bind</b> and they remain ordinary Python functions that can be called directly.
+                </Feature.Blurb>
+                <Feature.Code>
+{
+`
+@tasks.bind()
+def multiply(a, b):
+  return a * b
+
+print(multiply(3, 2))
+`
+}
+                </Feature.Code>
+              </Feature>
+
+
+              <div className="b-example-divider"></div>
+
+              <Feature title="Calling a task" actions={true}>
+                <Feature.Blurb>
+                  To call the task from the client first create a function signature with the name Python module and function name as on the worker.  The function implementation is not needed.
                   <br></br><br></br>
-                  Use <b>.send()</b> to construct a pipeline comprised of this task and submit it to Flink using the client.
+                  Use <b><i>function</i>.send()</b> to build a pipeline comprised of this task and submit it to Flink using the client.
                 </Feature.Blurb>
                 <Feature.Code>
 {
