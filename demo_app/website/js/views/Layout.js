@@ -40,9 +40,9 @@ export default function Layout() {
 from statefun_tasks import FlinkTasks
 
 tasks = FlinkTasks(
-default_namespace="demo", 
-default_worker_name="worker", 
-egress_type_name="demo/kafka-generic-egress"
+  default_namespace="demo", 
+  default_worker_name="worker", 
+  egress_type_name="demo/kafka-generic-egress"
 )
 `
 }
@@ -60,10 +60,10 @@ egress_type_name="demo/kafka-generic-egress"
 from statefun_tasks.client import FlinkTasksClientFactory
 
 flink_client = FlinkTasksClientFactory.get_client(
-kafka_broker_url=kafka:9092, 
-request_topics={None: 'statefun.tasks.demo.requests'}, 
-action_topics={None: 'statefun.tasks.demo.actions'}, 
-reply_topic=f'statefun.tasks.demo.reply'
+  kafka_broker_url=kafka:9092, 
+  request_topics={None: 'statefun.tasks.demo.requests'}, 
+  action_topics={None: 'statefun.tasks.demo.actions'}, 
+  reply_topic=f'statefun.tasks.demo.reply'
 )
 `
 }
@@ -81,7 +81,7 @@ reply_topic=f'statefun.tasks.demo.reply'
 `
 @tasks.bind()
 def multiply(a, b):
-return a * b
+  return a * b
 
 print(multiply(3, 2))
 `
@@ -103,7 +103,7 @@ print(multiply(3, 2))
 `
 @tasks.bind()
 def multiply(a, b):
-pass
+  pass
 
 pipeline = multiply.send(3, 2)
 
