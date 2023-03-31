@@ -5,15 +5,15 @@ import { createRoot } from 'react-dom/client'
 import { createLogger } from 'redux-logger'
 import { Provider } from 'react-redux'
 import { configureStore, applyMiddleware } from '@reduxjs/toolkit'
+import webSockets from './utils/webSockets'
 import reducers from './modules/reducers'
 import Layout from './views/Layout'
-
-const logger = createLogger();
 
 const store = configureStore({
     reducer: reducers,
     middleware: [
-        logger
+        createLogger(),
+        webSockets()
     ]
 })
 

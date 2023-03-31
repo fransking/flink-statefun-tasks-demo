@@ -20,7 +20,7 @@ const Feature = ({children, title, actions}) => {
                 </div>
                 {actions && 
                     <div className="d-grid gap-2 d-md-flex justify-content-md-start">
-                        <button type="button" class="btn btn-outline-primary btn-lg px-4">Try it</button>
+                        <button type="button" className="btn btn-outline-primary btn-lg px-4">Try it</button>
                     </div>
                     }
             </div>
