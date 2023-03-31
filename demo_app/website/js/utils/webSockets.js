@@ -19,7 +19,7 @@ const webSockets = () => {
             store.dispatch(({type: 'WS_CONNECTED'}))
 
             Object.keys(subscriptions).forEach(topic => {
-                sendSocket(store, {'action': 'WS_SUBSCRIBE', 'topic': topic})
+                subscribe(store, topic)
             })
         }
 
@@ -41,18 +41,24 @@ const webSockets = () => {
     }
 
     const subscribe = (store, topic) => {
-        sendSocket(store, {'action': 'WS_SUBSCRIBE', 'topic': topic})
+        if (sendSocket(store, {'action': 'WS_SUBSCRIBE', 'topic': topic})) {
+            store.dispatch(({type: 'WS_SUBSCRIBED', 'topic': topic}))
+        }
     }
 
     const unsubscribe = (store, topic) => {
-        sendSocket(store, {'action': 'WS_UNSUBSCRIBE', 'topic': topic})
+        if (sendSocket(store, {'action': 'WS_UNSUBSCRIBE', 'topic': topic})) {
+            store.dispatch(({type: 'WS_UNSUBSCRIBED', 'topic': topic}))
+        }
     }
 
     const sendSocket = (store, message) => {
         try {
             websocket.send(JSON.stringify(message))
+            return true;
         } catch (error) {
             store.dispatch(({type: 'WS_ERROR', error: error}))
+            return false;
         }
     }
 
