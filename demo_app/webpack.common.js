@@ -12,7 +12,8 @@ module.exports = () => ({
     plugins: [
         new HtmlWebpackPlugin({
             template: 'website/index_template.html',
-            filename: 'index.html'
+            filename: 'index.html',
+            favicon: "website/favicon.ico"
         }),
         new MiniCssExtractPlugin()
     ],
@@ -34,6 +35,15 @@ module.exports = () => ({
                     path.join(__dirname, 'website')
                 ],
                 use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"]
+            },
+            {
+                test: /\.ico$/i,
+                use: {
+                    loader: "file-loader",
+                    options: {
+                        name: "[name].[ext]"
+                    }
+                }
             }
         ]
     },
