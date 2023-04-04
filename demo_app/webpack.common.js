@@ -44,6 +44,10 @@ module.exports = () => ({
                         name: "[name].[ext]"
                     }
                 }
+            },
+            {
+                test: /\.woff2?$/,
+                type: "asset/resource",
             }
         ]
     },

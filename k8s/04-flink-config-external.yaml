@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flink-statefun-config
+  namespace: flink-statefun-tasks-demo
+  labels:
+    app: flink-statefun
+data:
+  module.yaml: |-
+    version: "3.0"
+    module:
+      meta:
+        type: remote
+      spec:
+        endpoints:
+        - endpoint:
+            meta:
+              kind: http
+            spec:
+              functions: demo/worker
+              urlPathTemplate: http://192.168.58.22:8085
+              maxNumBatchRequests: 1000
+        ingresses:
+          - ingress:
+              meta:
+                type: io.statefun.kafka/ingress
+                id: demo/worker
+              spec:
+                address: kafka:9092
+                consumerGroupId: flink-cluster-id
+                topics:
+                  - topic: statefun.tasks.demo.requests
+                    valueType: io.statefun_tasks.types/statefun_tasks.TaskRequest
+                    targets:
+                      - demo/worker
+                  - topic: statefun.tasks.demo.actions
+                    valueType: io.statefun_tasks.types/statefun_tasks.TaskActionRequest
+                    targets:
+                      - demo/worker
+        egresses:
+          - egress:
+              meta:
+                type: io.statefun.kafka/egress
+                id: demo/kafka-generic-egress
+              spec:
+                address: kafka:9092
+                deliverySemantic:
+                  type: at-least-once

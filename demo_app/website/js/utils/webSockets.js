@@ -1,3 +1,5 @@
+import { getBaseUrl } from "./urlUtils"
+
 const wsSubscribe = (dispatch, topic, callback) => {
     dispatch(({type: 'WS_SUBSCRIBE', topic:topic, callback: callback}))
 }
@@ -13,8 +15,8 @@ const webSockets = () => {
     const subscriptions = {}
 
     const wsConnect = store => {
-        websocket = new WebSocket('ws://' + window.location.hostname + ':8082/ws')
-
+        websocket = new WebSocket(getBaseUrl('ws') + '/ws')
+        
         websocket.onopen = () => {
             store.dispatch(({type: 'WS_CONNECTED'}))
 
@@ -34,9 +36,8 @@ const webSockets = () => {
         }
 
         websocket.onmessage = message => {
-            store.dispatch(({type: 'WS_MESSAGE'}))
             const data = JSON.parse(message.data)
-            callbacks[data.topic].map(callback => callback(data))
+            store.dispatch(({type: 'WS_MESSAGE', data: data}))
         }
     }
 
@@ -62,6 +63,14 @@ const webSockets = () => {
         }
     }
 
+    const invokeCallback = (store, callback, data) => {
+        try {
+            store.dispatch(callback(data))
+        } catch (error) {
+            store.dispatch(({type: 'WS_CALLBACK_ERROR', error: error}))
+        }
+    }
+
     return store => {
 
         wsConnect(store);
@@ -82,6 +91,12 @@ const webSockets = () => {
                     callbacks = callbacks.filter(el => el !== callback)
                     subscriptions[action.topic] = callbacks
                     unsubscribe(store, action.topic)
+                }
+                break;
+
+                case 'WS_MESSAGE': {
+                    let callbacks = subscriptions[action.data.topic] || []
+                    callbacks.forEach(callback => invokeCallback(store, callback, action.data))
                 }
                 break;
             }

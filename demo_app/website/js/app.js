@@ -4,6 +4,7 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { createLogger } from 'redux-logger'
 import { Provider } from 'react-redux'
+import thunkMiddleware from 'redux-thunk'
 import { configureStore, applyMiddleware } from '@reduxjs/toolkit'
 import webSockets from './utils/webSockets'
 import reducers from './modules/reducers'
@@ -12,6 +13,7 @@ import Layout from './views/Layout'
 const store = configureStore({
     reducer: reducers,
     middleware: [
+        thunkMiddleware,
         createLogger(),
         webSockets()
     ]
