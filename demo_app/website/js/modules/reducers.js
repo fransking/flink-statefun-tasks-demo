@@ -1,5 +1,5 @@
-import systemReducer from './system/systemSlice'
+import workflowsSlice from './system/workflowsSlice'
 
 export default {
-    system: systemReducer
+    workflows: workflowsSlice
 }

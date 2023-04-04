@@ -1,3 +1,4 @@
 statefun-tasks
 aiohttp
+aiohttp_cors
 gunicorn
