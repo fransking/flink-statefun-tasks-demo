@@ -8,7 +8,7 @@ export default function ExampleFeature() {
     <div>
       <Feature title="Calling a task">
         <Feature.Blurb>
-          To call the task from the client first create a function signature with the name Python module and function name as on the worker.  The function implementation is not needed.
+          To call the task from the client first create a function signature with the same Python module and function name as on the worker.  The function implementation is not needed.
           <br></br><br></br>
           Use <b><i>function</i>.send()</b> to build a pipeline comprised of this task and submit it to Flink using the client.
         </Feature.Blurb>
