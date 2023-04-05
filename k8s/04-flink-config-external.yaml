@@ -18,6 +18,13 @@ data:
               kind: http
             spec:
               functions: demo/worker
+              urlPathTemplate: http://demo-app-worker:8085
+              maxNumBatchRequests: 1000
+        - endpoint:
+            meta:
+              kind: http
+            spec:
+              functions: external/worker
               urlPathTemplate: http://192.168.58.22:8085
               maxNumBatchRequests: 1000
         ingresses:
@@ -37,6 +44,14 @@ data:
                     valueType: io.statefun_tasks.types/statefun_tasks.TaskActionRequest
                     targets:
                       - demo/worker
+                  - topic: external.statefun.tasks.demo.requests
+                    valueType: io.statefun_tasks.types/statefun_tasks.TaskRequest
+                    targets:
+                      - external/worker
+                  - topic: external.statefun.tasks.demo.actions
+                    valueType: io.statefun_tasks.types/statefun_tasks.TaskActionRequest
+                    targets:
+                      - external/worker
         egresses:
           - egress:
               meta:
