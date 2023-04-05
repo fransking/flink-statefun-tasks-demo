@@ -13,7 +13,8 @@ export default function ExampleFeature() {
         <Feature.Code>
 {
 `
-pipeline = multiply.send(3, 2).continue_with(fail, error_message="An error occurred") \\
+pipeline = multiply.send(3, 2) \\
+  .continue_with(fail, error_message="An error occurred") \\
   .continue_with(multiply, 10)
 
 result = await flink_client.submit_async(pipeline)
