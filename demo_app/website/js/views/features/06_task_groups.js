@@ -6,16 +6,22 @@ export default function ExampleFeature() {
 
   return (
     <div>
-      <Feature title="Task chaining">
+      <Feature title="Task groups">
         <Feature.Blurb>
-          Tasks can be chained together using <b><i>pipeline</i>.continue_with()</b>.
+          Tasks can be parallelised as a group using <b>in_parallel()</b>.
           <br></br><br></br>
-          The output of the first task is passed as input to the second task and so on.
+          The output of a group is a list of results.
         </Feature.Blurb>
         <Feature.Code>
 {
 `
-pipeline = multiply.send(3, 2).continue_with(multiply, 10).continue_with(multiply, 2)
+from statefun_tasks import in_parallel
+
+pipeline = in_parallel([
+    multiply.send(3, 2), 
+    multiply.send(4, 2),
+    multiply.send(5, 2)
+])
 
 result = await flink_client.submit_async(pipeline)
 print(result)
@@ -23,7 +29,7 @@ print(result)
 }
         </Feature.Code>
 
-        <Feature.Showcase id={uuidv4()} api="/api/task_chaining/" template={[1, 2, 3]} />
+        <Feature.Showcase id={uuidv4()} api="/api/task_groups/" template={[{a: [[1], [2], [3]]}]} />
       </Feature>
       <div className="b-example-divider"></div>
     </div>

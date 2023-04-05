@@ -1,4 +1,4 @@
-from py_files.tasks import tasks
+from py_files.tasks import tasks, default_namespace, default_worker_name
 from py_files.tasks import Events
 
 from statefun import StatefulFunctions
@@ -21,7 +21,7 @@ functions = StatefulFunctions()
 handler = RequestReplyHandler(functions)
 
 
-@functions.bind("demo/worker", specs=tasks.value_specs())
+@functions.bind(f'{default_namespace}/{default_worker_name}', specs=tasks.value_specs())
 async def worker(context, message):
     try:
         await tasks.run_async(context, message)

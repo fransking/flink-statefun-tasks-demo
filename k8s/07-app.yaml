@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-app-server
+  namespace: flink-statefun-tasks-demo
+  labels:
+      app: demo-app
+      component: server
+spec:
+  #type: NodePort
+  ports:
+    - name: webui
+      port: 8082
+  selector:
+      app: demo-app
+      component: server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app-server
+  namespace: flink-statefun-tasks-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-app
+      component: server
+  template:
+    metadata:
+      labels:
+        app: demo-app
+        component: server
+    spec:
+      containers:
+      - name: server
+        image: fransking/flink-demo-app:latest
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-app-worker
+  namespace: flink-statefun-tasks-demo
+  labels:
+      app: demo-app
+      component: worker
+spec:
+  #type: NodePort
+  ports:
+    - name: webui
+      port: 8085
+  selector:
+      app: demo-app
+      component: worker
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app-worker
+  namespace: flink-statefun-tasks-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-app
+      component: worker
+  template:
+    metadata:
+      labels:
+        app: demo-app
+        component: worker
+    spec:
+      containers:
+      - name: worker
+        image: fransking/flink-demo-app:latest
+        args: ["worker"]
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8085
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-app-server
+  namespace: flink-statefun-tasks-demo
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: demo-app-server
+            port:
+              number: 8082

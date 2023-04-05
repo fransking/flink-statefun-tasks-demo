@@ -1,17 +1,18 @@
 from statefun_tasks import FlinkTasks
-from statefun_tasks import in_parallel
 import asyncio
+import os
 import logging
 
 
 _log = logging.getLogger(__name__)
 
 
-tasks = FlinkTasks(
-  default_namespace="demo", 
-  default_worker_name="worker", 
-  egress_type_name="demo/kafka-generic-egress"
-)
+default_namespace = os.environ.get('FLINK_WORKER_NAMESPACE', 'external')
+default_worker_name = os.environ.get('FLINK_WORKER_NAME', 'worker')
+egress_type_name = os.environ.get('FLINK_EGRESS_TYPE_NAME', 'demo/kafka-generic-egress')
+
+
+tasks = FlinkTasks(default_namespace, default_worker_name, egress_type_name)
 
 
 @tasks.bind()

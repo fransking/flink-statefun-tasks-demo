@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: flink-statefun-jobmanager
+  namespace: flink-statefun-tasks-demo
+  annotations:
+    # nginx.ingress.kubernetes.io/app-root: "/flink"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    # re-write folder names with a trailing slash
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^([^.?]*[^/])$ $1/ redirect;
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /flink(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: flink-statefun-jobmanager
+            port:
+              number: 8081

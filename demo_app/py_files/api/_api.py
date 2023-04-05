@@ -11,7 +11,13 @@ import json
 
 
 api_routes = web.RouteTableDef()
-flink = create_flink_client(os.environ.get('KAFKA_URL', 'kafka:30092'))
+
+flink = create_flink_client(
+    kafka_broker_url=os.environ.get('KAFKA_URL', 'kafka:30092'),
+    request_topic=os.environ.get('KAFKA_REQUEST_INGRESS_TOPIC', 'external.statefun.tasks.demo.requests'),
+    action_topic=os.environ.get('KAFKA_ACTION_INGRESS_TOPIC', 'external.statefun.tasks.demo.actions'),
+    reply_topic=os.environ.get('KAFKA_REPLY_TOPIC', 'statefun.tasks.demo.reply'),
+)
 
 
 async def _submit_and_return(pipeline, request):
