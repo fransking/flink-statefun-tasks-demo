@@ -11,11 +11,14 @@ const wsUnsubscribe = (dispatch, topic, callback) => {
 const webSockets = () => {
     console.log('Websocket middleware loaded')
 
-    let websocket = null;
+    let websocket = null
+    
     const subscriptions = {}
 
     const wsConnect = store => {
         websocket = new WebSocket(getBaseUrl('ws') + '/ws')
+        let ping = null
+        let timeout = null
         
         websocket.onopen = () => {
             store.dispatch(({type: 'WS_CONNECTED'}))
@@ -23,21 +26,48 @@ const webSockets = () => {
             Object.keys(subscriptions).forEach(topic => {
                 subscribe(store, topic)
             })
+
+            ping = setInterval(() => keepalive(), 5000)
+        }
+
+        const keepalive = () => {
+            websocket.send(JSON.stringify({action: 'PING'}))
+            timeout = setTimeout(() => onTimeout(), 5000)
+        }
+
+        const onTimeout = () => {
+            clearTimeout(timeout)
+            clearInterval(ping)
+            
+            store.dispatch(({type: 'WS_TIMEOUT'}))
+            setTimeout(() => wsConnect(store), 1000)
         }
 
         websocket.onerror = (error) => {
+            clearTimeout(timeout)
+            clearInterval(ping)
+
             store.dispatch(({type: 'WS_ERROR', error: error}))
             websocket.close()
         }
 
         websocket.onclose = () => {
+            clearTimeout(timeout)
+            clearInterval(ping)
+
             store.dispatch(({type: 'WS_CLOSED'}))
             setTimeout(() => wsConnect(store), 1000)
         }
 
         websocket.onmessage = message => {
             const data = JSON.parse(message.data)
-            store.dispatch(({type: 'WS_MESSAGE', data: data}))
+
+            if (data.action === 'PONG') {
+                console.log("GOT A PONG")
+                clearTimeout(timeout)
+            } else {
+                store.dispatch(({type: 'WS_MESSAGE', data: data}))
+            }
         }
     }
 

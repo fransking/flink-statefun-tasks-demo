@@ -35,6 +35,7 @@ class WebSockets():
 
     async def start(self):
         self._loop = asyncio.get_event_loop()
+
         self._consumer_thread.start()
         _log.info('Started web socket kafka consumer')
 
@@ -59,19 +60,19 @@ class WebSockets():
                 if msg.data == 'CLOSE':
                     await ws.close()
                 else:
-                    self._try_handle_message(ws, source_ip, msg.data)
+                    await self._try_handle_message(ws, source_ip, msg.data)
 
         _log.info(f'Web socket connection from {source_ip} closed')
 
         return ws
 
-    def _try_handle_message(self, ws, source_ip, data):
+    async def _try_handle_message(self, ws, source_ip, data):
         try:
-            self._handle_message(ws, source_ip, data)
+            await self._handle_message(ws, source_ip, data)
         except Exception as e:
             _log.error(f'Error handling web socket message - {e}', e)
 
-    def _handle_message(self, ws, source_ip, data):
+    async def _handle_message(self, ws, source_ip, data):
         request = json.loads(data)
 
         if request['action'] == 'WS_SUBSCRIBE':
@@ -83,7 +84,9 @@ class WebSockets():
             subscriptions = self._subscriptions.setdefault(ws, set())
             subscriptions.discard(request["topic"])
 
-            _log.info(f'{source_ip} unsubscribed from {request["topic"]}')
+        elif request['action'] == 'PING':
+            _log.info(f'ping from {source_ip}')
+            await ws.send_json({'action': 'PONG'})
 
     def _handle_kafka_message(self):
         while True:
