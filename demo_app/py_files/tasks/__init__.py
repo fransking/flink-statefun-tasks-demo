@@ -4,4 +4,6 @@ from ._tasks import default_namespace
 from ._tasks import default_worker_name
 from ._tasks import multiply
 from ._tasks import sum_all
+from ._tasks import sum_numbers
 from ._tasks import fail
+from ._tasks import flakey_multiply

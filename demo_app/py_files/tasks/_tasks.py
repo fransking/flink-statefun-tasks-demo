@@ -1,4 +1,6 @@
 from statefun_tasks import FlinkTasks
+from statefun_tasks import TaskException
+from statefun_tasks import RetryPolicy
 import asyncio
 import os
 import logging
@@ -28,6 +30,24 @@ async def sum_all(*items):
 
 
 @tasks.bind()
+async def sum_numbers(items):
+    await asyncio.sleep(1)
+    return sum([item for item in items if not isinstance(item, TaskException)])
+
+
+@tasks.bind()
 async def fail(*args, error_message):
     await asyncio.sleep(1)
     raise ValueError(error_message)
+
+
+@tasks.bind(with_context=True, retry_policy=RetryPolicy(retry_for=[ValueError], max_retries=2))
+async def flakey_multiply(ctx, a, b):
+    await asyncio.sleep(1)
+    state = ctx.get_state() or False
+
+    if state:
+        return a * b
+    else:
+        ctx.set_state(True)
+        raise ValueError()

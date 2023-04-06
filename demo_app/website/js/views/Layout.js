@@ -12,6 +12,7 @@ import TaskGroups from './features/06_task_groups';
 import LimitingConcurrency from './features/07_limiting_concurrency';
 import TaskChainsAndGroups from './features/08_task_chains_and_groups';
 import TaskFailures from './features/09_task_failures';
+import TaskRetry from './features/10_task_retry';
 
 
 export default function Layout() {
@@ -42,6 +43,7 @@ export default function Layout() {
             <LimitingConcurrency />
             <TaskChainsAndGroups />
             <TaskFailures />
+            <TaskRetry />
             
         </main>
         <footer className="footer mt-auto py-3 bg-light">

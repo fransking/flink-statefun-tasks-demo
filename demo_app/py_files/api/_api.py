@@ -2,6 +2,8 @@ from py_files import create_flink_client
 from py_files.tasks import multiply
 from py_files.tasks import sum_all
 from py_files.tasks import fail
+from py_files.tasks import sum_numbers
+from py_files.tasks import flakey_multiply
 
 from statefun_tasks import in_parallel
 from statefun_tasks.client import TaskError
@@ -26,7 +28,8 @@ async def _submit_and_return(pipeline, request):
         result = await flink.submit_async(pipeline)
         return web.Response(text=json.dumps({'result': result}), content_type='application/json')
     except TaskError as e:
-        return web.Response(text=json.dumps({'result': e.message}), content_type='application/json')
+        errors = [error.split(',')[-1] for error in e.message.split('|')]
+        return web.Response(text=json.dumps({'result': errors[0] if len(errors) == 1 else errors}), content_type='application/json')
 
 
 @api_routes.post('/api/calling_a_task/{id}')
@@ -84,6 +87,39 @@ async def calling_a_task(request):
 @api_routes.post('/api/task_failure/{id}')
 async def task_failure(request):
     pipeline = multiply.send(3, 2).continue_with(fail, error_message="An error occurred") \
+        .continue_with(multiply, 10)
+    
+    return await _submit_and_return(pipeline, request)
+
+
+@api_routes.post('/api/task_failure_within_group/{id}')
+async def task_failure_within_group(request):
+    pipeline = in_parallel([
+        multiply.send(3, 2), 
+        fail.send(error_message="An error occurred"),
+        fail.send(error_message="Another error occurred"),
+        multiply.send(5, 2)
+    ], max_parallelism=2).continue_with(sum_all)
+    
+    return await _submit_and_return(pipeline, request)
+
+
+@api_routes.post('/api/task_failure_within_group_return_exceptions/{id}')
+async def task_failure_within_group_return_exceptions(request):
+    pipeline = in_parallel([
+        multiply.send(3, 2), 
+        fail.send(error_message="An error occurred"),
+        fail.send(error_message="Another error occurred"),
+        multiply.send(5, 2)
+    ], max_parallelism=2, return_exceptions=True).continue_with(sum_numbers)
+    
+    return await _submit_and_return(pipeline, request)
+
+
+@api_routes.post('/api/task_failure_with_retry/{id}')
+async def task_failure_with_retry(request):
+    pipeline = multiply.send(3, 2) \
+        .continue_with(flakey_multiply, 5) \
         .continue_with(multiply, 10)
     
     return await _submit_and_return(pipeline, request)

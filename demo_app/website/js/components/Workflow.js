@@ -81,6 +81,9 @@ const makeItems = (template, container) => {
 }
 
 
+const formatResult = (result) => result ? JSON.stringify(result.result, null, 2).replaceAll("\"", "") : ""
+
+
 const Workflow = ({items = [], template = [], result = null}) => {
     if (items.length === 0) {
         items = makeItems(template)
@@ -94,7 +97,7 @@ const Workflow = ({items = [], template = [], result = null}) => {
                     <td><i className="demo-arrow demo-arrow--lg bi bi-chevron-right"></i></td>
                     <td><TaskChain items={items} /></td>
                     <td><i className="demo-arrow demo-arrow--lg bi bi-chevron-right"></i></td>
-                    <td><p className="demo-result">{result && JSON.stringify(result.result, null, 2)}</p></td>
+                    <td><p className="demo-result">{formatResult(result)}</p></td>
                 </tr>
                 </tbody>
             </table>
