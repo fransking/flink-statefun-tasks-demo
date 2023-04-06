@@ -37,12 +37,22 @@ const workflowsSlice = createSlice({
     name: 'workflows',
     initialState: {
         isRunning: false,
+        subscriptions: {},
         pipelines: {},
         results: {}
     },
     reducers: {
         onTaskEvent(state, action) {
+
             switch (action.payload.type) {
+                case 'WS_SUBSCRIBED': {
+                    state.subscriptions[action.payload.topic] = true
+                    break;
+                }
+                case 'WS_UNSUBSCRIBED': {
+                    delete state.subscriptions[action.payload.topic]
+                    break;
+                }
                 case 'PIPELINE_CREATED': {
                     state.pipelines[action.payload.root_pipeline_id] = action.payload.data
                 }
@@ -51,7 +61,7 @@ const workflowsSlice = createSlice({
                     markTaskComplete(action.payload.task_id, action.payload.status, pipeline)
                 }
                 break
-            }
+            }            
         },
         resetWorkflow(state, action) {
             state.pipelines[action.payload] = []
