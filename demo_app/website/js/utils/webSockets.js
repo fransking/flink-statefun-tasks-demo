@@ -38,7 +38,7 @@ const webSockets = () => {
         const onTimeout = () => {
             clearTimeout(timeout)
             clearInterval(ping)
-            
+
             store.dispatch(({type: 'WS_TIMEOUT'}))
             setTimeout(() => wsConnect(store), 1000)
         }
@@ -63,7 +63,6 @@ const webSockets = () => {
             const data = JSON.parse(message.data)
 
             if (data.action === 'PONG') {
-                console.log("GOT A PONG")
                 clearTimeout(timeout)
             } else {
                 store.dispatch(({type: 'WS_MESSAGE', data: data}))
@@ -112,6 +111,7 @@ const webSockets = () => {
                     let callbacks = subscriptions[action.topic] || []
                     callbacks.push(action.callback)
                     subscriptions[action.topic] = callbacks
+
                     subscribe(store, action.topic)
                 }
                 break;
@@ -119,14 +119,28 @@ const webSockets = () => {
                 case 'WS_UNSUBSCRIBE': {
                     let callbacks = subscriptions[action.topic] || []
                     callbacks = callbacks.filter(el => el !== callback)
-                    subscriptions[action.topic] = callbacks
-                    unsubscribe(store, action.topic)
+                    
+                    if (callbacks.length === 0) {
+                        delete subscriptions[action.topic]
+                        unsubscribe(store, action.topic)
+                    } else {
+                        subscriptions[action.topic] = callbacks
+                    }
                 }
                 break;
 
                 case 'WS_MESSAGE': {
                     let callbacks = subscriptions[action.data.topic] || []
-                    callbacks.forEach(callback => invokeCallback(store, callback, action.data))
+                    callbacks.forEach(callback => invokeCallback(store, callback, action.data))                    
+                }
+                break;
+
+                case 'WS_CLOSED':
+                case 'WS_TIMEOUT': {
+                    Object.keys(subscriptions).forEach(topic => {
+                        let callbacks = subscriptions[topic] || []
+                        callbacks.forEach(callback => invokeCallback(store, callback, {'type': 'WS_UNSUBSCRIBED', 'topic': topic}))         
+                    })
                 }
                 break;
             }

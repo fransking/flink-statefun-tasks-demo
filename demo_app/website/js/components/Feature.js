@@ -27,6 +27,7 @@ Feature.Blurb = ({children}) => <p className="lead">{children}</p>
 
 Feature.Showcase = ({id, api, template}) => {
     const dispatch = useDispatch()
+    const subscriptions = useSelector(state => state.workflows.subscriptions)
     const pipelines = useSelector(state => state.workflows.pipelines)
     const isRunning = useSelector(state => state.workflows.isRunning)
     const results = useSelector(state => state.workflows.results)
@@ -35,11 +36,13 @@ Feature.Showcase = ({id, api, template}) => {
         wsSubscribe(dispatch, 'task_events.' + id, onTaskEvent)
     }, []);
 
+    const disabled = isRunning || 'task_events.' + id in subscriptions == false
+
     return (
         <div>
             <hr></hr>
             <div className="d-grid gap-2 d-md-flex justify-content-md-start">
-                <button type="button" className="btn btn-primary btn px-4" disabled={isRunning} onClick={() => dispatch(runWorkflow({api, id}))}>Try it</button>
+                <button type="button" className="btn btn-primary btn px-4" disabled={disabled} onClick={() => dispatch(runWorkflow({api, id}))}>Try it</button>
                 <button type="button" className="btn btn-outline-secondary btn px-4" disabled={isRunning} onClick={() => dispatch(resetWorkflow(id))}>Reset</button>
             </div>
 

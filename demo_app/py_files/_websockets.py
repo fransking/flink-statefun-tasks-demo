@@ -75,17 +75,23 @@ class WebSockets():
     async def _handle_message(self, ws, source_ip, data):
         request = json.loads(data)
 
+        # subscribe to a topic
         if request['action'] == 'WS_SUBSCRIBE':
             subscriptions = self._subscriptions.setdefault(ws, set())
-            subscriptions.add(request["topic"])
+            subscriptions.add(request['topic'])
             _log.info(f'{source_ip} subscribed to {request["topic"]}')
 
+            # let client know that subscription was successful
+            await ws.send_json({'type': 'WS_SUBSCRIBED', 'topic': request['topic']})
+
+        # unsubscribe from a topic
         elif request['action'] == 'WS_UNSUBSCRIBE':
             subscriptions = self._subscriptions.setdefault(ws, set())
-            subscriptions.discard(request["topic"])
+            subscriptions.discard(request['topic'])
 
+        # pnng -> pong keepalive
         elif request['action'] == 'PING':
-            _log.info(f'ping from {source_ip}')
+            _log.debug(f'ping from {source_ip}')
             await ws.send_json({'action': 'PONG'})
 
     def _handle_kafka_message(self):
