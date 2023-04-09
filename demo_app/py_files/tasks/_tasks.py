@@ -24,6 +24,12 @@ async def multiply(a, b):
 
 
 @tasks.bind()
+async def divide(a, b):
+    await asyncio.sleep(1)  # to simulate the effect of doing real work
+    return a / b
+
+
+@tasks.bind()
 async def sum_all(*items):
     await asyncio.sleep(1)
     return sum(*items)
@@ -51,3 +57,9 @@ async def flakey_multiply(ctx, a, b):
     else:
         ctx.set_state(True)
         raise ValueError()
+
+
+@tasks.bind()
+async def handle_error(task_exception, return_value=None):
+    await asyncio.sleep(1)  # to simulate the effect of doing real work
+    return return_value

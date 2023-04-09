@@ -9,13 +9,14 @@ export default function ExampleFeature() {
       <Feature title="Retrying tasks">
         <Feature.Blurb>
           Tasks may be retried in case of failure by adding a <b>RetryPolicy</b>.  
+          The <a href="https://github.com/fransking/flink-statefun-tasks-demo/blob/main/demo_app/py_files/tasks/_tasks.py#L45" target="_blank">example</a> makes use of Flink's stateful features to succeed on the second attempt.
         </Feature.Blurb>
         <Feature.Code>
 {
 `
 @tasks.bind(retry_policy=RetryPolicy(retry_for=[ValueError], max_retries=2))
 async def flakey_multiply(a, b):
-    ...
+    pass
 
 
 pipeline = multiply.send(3, 2) \\
