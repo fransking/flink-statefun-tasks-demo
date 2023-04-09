@@ -25,7 +25,7 @@ print(result)
         <div className="container col-xxl-8 px-4 py-3">
             <hr></hr>
             <div className="row flex-lg-row-reverse align-items-center py-1">
-                <div className="col-10 px-4 col-sm-8 col-lg-6"><code><pre>{code}</pre></code></div>
+                <div className="d-flex flex-column px-3 col-lg-6"><code><pre>{code}</pre></code></div>
 
                 <div className="col-lg-6">
                     <Feature.Showcase hr={false} id={uuidv4()} api="/api/task_chains_and_groups/" template={[{a: [[1], [2, 22 , 23], [3, 33], [4]]}, 10]} />

@@ -90,7 +90,7 @@ const Workflow = ({items = [], template = [], result = null}) => {
     }
 
     return (
-        <div className="container px-0 py-0">
+        <div className="container px-0 py-2 table-responsive">
             <table>
                 <tbody>
                 <tr>
