@@ -1,9 +1,11 @@
 from py_files import create_flink_client
 from py_files.tasks import multiply
+from py_files.tasks import divide
 from py_files.tasks import sum_all
 from py_files.tasks import fail
 from py_files.tasks import sum_numbers
 from py_files.tasks import flakey_multiply
+from py_files.tasks import handle_error
 
 from statefun_tasks import in_parallel
 from statefun_tasks.client import TaskError
@@ -121,5 +123,16 @@ async def task_failure_with_retry(request):
     pipeline = multiply.send(3, 2) \
         .continue_with(flakey_multiply, 5) \
         .continue_with(multiply, 10)
+    
+    return await _submit_and_return(pipeline, request)
+
+
+@api_routes.post('/api/task_failure_with_exceptionally/{id}')
+async def task_failure_with_retry(request):
+    pipeline = multiply.send(3, 2) \
+        .continue_with(divide, 0) \
+        .continue_with(multiply, 2) \
+        .exceptionally(handle_error, return_value=6) \
+        .continue_with(multiply, 2)
     
     return await _submit_and_return(pipeline, request)
