@@ -15,7 +15,7 @@ const Feature = ({children, title}) => {
                 <h1 className="display-5 fw-bold lh-1 mb-3"><section id={title}>{title}</section></h1>
                 {blurb}
                 </div>
-                <div className="col-10 col-sm-8 col-lg-6 px-4">{code}</div>
+                <div className="d-flex flex-column px-3 col-lg-6 px-4">{code}</div>
                 {showcase}
             </div>
         </div>
