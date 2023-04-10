@@ -9,3 +9,4 @@ from ._tasks import sum_numbers
 from ._tasks import fail
 from ._tasks import flakey_multiply
 from ._tasks import handle_error
+from ._tasks import cleanup

@@ -9,7 +9,7 @@ export default function ExampleFeature() {
       <Feature title="Retrying tasks">
         <Feature.Blurb>
           Tasks may be retried in case of failure by adding a <b>RetryPolicy</b>.  
-          The <a href="https://github.com/fransking/flink-statefun-tasks-demo/blob/main/demo_app/py_files/tasks/_tasks.py#L45" target="_blank">example</a> makes use of Flink's stateful features to succeed on the second attempt.
+          The <a href="https://github.com/fransking/flink-statefun-tasks-demo/blob/main/demo_app/py_files/tasks/_tasks.py#L53" target="_blank">example</a> makes use of Flink's stateful features to succeed on the second attempt.
         </Feature.Blurb>
         <Feature.Code>
 {

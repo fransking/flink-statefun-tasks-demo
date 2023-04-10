@@ -12,6 +12,7 @@ import TaskChainsAndGroups from './features/08_task_chains_and_groups'
 import TaskFailures from './features/09_task_failures'
 import TaskRetry from './features/10_task_retry'
 import Exceptionally from './features/11_exceptionally'
+import CleanupWithFinally from './features/12_cleanup_with_finally'
 
 
 export default function Layout() {
@@ -47,6 +48,7 @@ export default function Layout() {
             <TaskFailures />
             <TaskRetry />
             <Exceptionally />
+            <CleanupWithFinally />
             
         </main>
         <footer className="footer mt-auto py-3 bg-light">
