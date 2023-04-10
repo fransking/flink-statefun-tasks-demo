@@ -61,5 +61,10 @@ async def flakey_multiply(ctx, a, b):
 
 @tasks.bind()
 async def handle_error(task_exception, return_value=None):
-    await asyncio.sleep(1)  # to simulate the effect of doing real work
+    await asyncio.sleep(1)  
     return return_value
+
+
+@tasks.bind()
+async def cleanup(*args):
+    await asyncio.sleep(1)  

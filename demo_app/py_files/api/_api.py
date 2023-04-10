@@ -6,6 +6,7 @@ from py_files.tasks import fail
 from py_files.tasks import sum_numbers
 from py_files.tasks import flakey_multiply
 from py_files.tasks import handle_error
+from py_files.tasks import cleanup
 
 from statefun_tasks import in_parallel
 from statefun_tasks.client import TaskError
@@ -135,4 +136,14 @@ async def task_failure_with_retry(request):
         .exceptionally(handle_error, return_value=6) \
         .continue_with(multiply, 2)
     
+    return await _submit_and_return(pipeline, request)
+
+
+@api_routes.post('/api/task_failure_with_finally/{id}')
+async def task_failure_with_finally(request):
+    pipeline = multiply.send(3, 2) \
+    .continue_with(fail, error_message="An error occurred") \
+    .continue_with(multiply, 10) \
+    .finally_do(cleanup)
+
     return await _submit_and_return(pipeline, request)
