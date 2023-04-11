@@ -54,7 +54,7 @@ print(result)
 
       <Feature title="Returning exceptions from groups">
         <Feature.Blurb>
-          Setting <b>return_exceptions</b> to true will propagate errors as results and keep the pipeline running.
+          Setting <b>return_exceptions</b> to true will propagate errors as results and keep the workflow running.
         </Feature.Blurb>
         <Feature.Code>
         {

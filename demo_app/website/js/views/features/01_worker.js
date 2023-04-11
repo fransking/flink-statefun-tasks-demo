@@ -19,9 +19,9 @@ export default function ExampleFeature() {
   from statefun_tasks import FlinkTasks
 
   tasks = FlinkTasks(
-    default_namespace="demo", 
-    default_worker_name="worker", 
-    egress_type_name="demo/kafka-generic-egress"
+    default_namespace='demo', 
+    default_worker_name='worker', 
+    egress_type_name='demo/kafka-generic-egress'
   )
   `
   }

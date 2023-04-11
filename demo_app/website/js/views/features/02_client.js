@@ -19,7 +19,7 @@ flink_client = FlinkTasksClientFactory.get_client(
   kafka_broker_url=kafka:9092, 
   request_topics={None: 'statefun.tasks.demo.requests'}, 
   action_topics={None: 'statefun.tasks.demo.actions'}, 
-  reply_topic=f'statefun.tasks.demo.reply'
+  reply_topic='statefun.tasks.demo.reply'
 )
 `
 }
