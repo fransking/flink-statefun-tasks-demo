@@ -11,6 +11,7 @@ from py_files.tasks import cleanup
 from statefun_tasks import in_parallel
 from statefun_tasks.client import TaskError
 from aiohttp import web
+import asyncio
 import os
 import json
 
@@ -147,3 +148,14 @@ async def task_failure_with_finally(request):
     .finally_do(cleanup)
 
     return await _submit_and_return(pipeline, request)
+
+
+@api_routes.post('/api/task_pause_and_resume/{id}')
+async def task_failure_with_finally(request):
+    pipeline = multiply.send(3, 2).wait().continue_with(multiply, 5).continue_with(multiply, 10)
+
+    future = asyncio.ensure_future(_submit_and_return(pipeline, request))
+    await asyncio.sleep(3)
+    await flink.unpause_pipeline_async(pipeline)
+
+    return await future
