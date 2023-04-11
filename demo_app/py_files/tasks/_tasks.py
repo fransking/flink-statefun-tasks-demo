@@ -1,6 +1,7 @@
 from statefun_tasks import FlinkTasks
 from statefun_tasks import TaskException
 from statefun_tasks import RetryPolicy
+from datetime import timedelta
 import asyncio
 import os
 import logging
@@ -12,9 +13,13 @@ _log = logging.getLogger(__name__)
 default_namespace = os.environ.get('FLINK_WORKER_NAMESPACE', 'external')
 default_worker_name = os.environ.get('FLINK_WORKER_NAME', 'worker')
 egress_type_name = os.environ.get('FLINK_EGRESS_TYPE_NAME', 'demo/kafka-generic-egress')
+state_expiration_minutes = os.environ.get('FLINK_STATE_EXPIRATION_TIME_MINUTES', '1440') # 24 hours
 
-
-tasks = FlinkTasks(default_namespace, default_worker_name, egress_type_name)
+tasks = FlinkTasks(
+    default_namespace, 
+    default_worker_name, 
+    egress_type_name, 
+    state_expiration=timedelta(minutes=float(state_expiration_minutes)))
 
 
 @tasks.bind()
