@@ -7,6 +7,7 @@ from py_files.tasks import sum_numbers
 from py_files.tasks import flakey_multiply
 from py_files.tasks import handle_error
 from py_files.tasks import cleanup
+from py_files.tasks import generate_series
 
 from statefun_tasks import in_parallel
 from statefun_tasks.client import TaskError
@@ -159,3 +160,9 @@ async def task_failure_with_finally(request):
     await flink.unpause_pipeline_async(pipeline)
 
     return await future
+
+
+@api_routes.post('/api/nested_workflows/{id}')
+async def nested_workflows(request):
+    pipeline = multiply.send(1, 2).continue_with(generate_series, 2, 4).continue_with(sum_all)
+    return await _submit_and_return(pipeline, request)

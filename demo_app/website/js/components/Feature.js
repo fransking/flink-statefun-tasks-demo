@@ -9,7 +9,7 @@ const Feature = ({children, title}) => {
     const [blurb, code, showcase] = subComponents(children, [Feature.Blurb, Feature.Code, Feature.Showcase])
 
     return (
-        <div className="container col-xxl-8 px-4 py-3">
+        <div className="container col-xxl-10 px-4 py-3">
             <div className="row flex-lg-row align-items-top g-5 py-3">
                 <div className="col-lg-6">
                 <h1 className="display-5 fw-bold lh-1 mb-3"><section id={title}>{title}</section></h1>
@@ -29,6 +29,7 @@ Feature.Showcase = ({id, api, template, hr=true}) => {
     const dispatch = useDispatch()
     const subscriptions = useSelector(state => state.workflows.subscriptions)
     const pipelines = useSelector(state => state.workflows.pipelines)
+    const nestedPipelines = useSelector(state => state.workflows.nestedPipelines)
     const isRunning = useSelector(state => state.workflows.isRunning)
     const results = useSelector(state => state.workflows.results)
 
@@ -50,6 +51,12 @@ Feature.Showcase = ({id, api, template, hr=true}) => {
             {!hr && <br></br>}
 
             <Workflow template={template} items={pipelines[id]} result={results[id]} />
+
+            {
+                nestedPipelines[id] && nestedPipelines[id].map((pipeline, index) => (   
+                    <Workflow key={index} items={pipeline} isNested={true} />
+                )
+            )}
         </div>
     );
 };

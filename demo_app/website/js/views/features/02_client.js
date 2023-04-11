@@ -25,7 +25,7 @@ flink_client = FlinkTasksClientFactory.get_client(
 }
         </Feature.Code>
       </Feature>
-      <div className="b-example-divider"></div>
+      <div className="container col-xxl-10 px-4"><hr></hr></div>
     </div>
   );
 };
