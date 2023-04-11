@@ -20,7 +20,7 @@ print(result)
   return (
     <div>
 
-        <div className="container col-xxl-8 px-4 py-3">
+        <div className="container col-xxl-10 px-4 py-3">
             <hr></hr>
             <div className="row flex-lg-row-reverse align-items-center py-1">
                 <div className="d-flex flex-column px-3 col-lg-6"><code><pre>{code}</pre></code></div>

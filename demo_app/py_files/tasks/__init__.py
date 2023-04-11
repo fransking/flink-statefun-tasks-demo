@@ -10,3 +10,5 @@ from ._tasks import fail
 from ._tasks import flakey_multiply
 from ._tasks import handle_error
 from ._tasks import cleanup
+from ._tasks import generate_series
+from ._tasks import multiply_and_append

@@ -60,6 +60,7 @@ const workflowsSlice = createSlice({
         isRunning: false,
         subscriptions: {},
         pipelines: {},
+        nestedPipelines: {},
         results: {},
         status: {}
     },
@@ -75,22 +76,37 @@ const workflowsSlice = createSlice({
                     break;
                 }
                 case 'PIPELINE_CREATED': {
-                    state.pipelines[action.payload.root_pipeline_id] = action.payload.data
+                    if (action.payload.root_pipeline_id === action.payload.pipeline_id) {
+                        // root pipeline
+                        state.pipelines[action.payload.root_pipeline_id] = action.payload.data
+                    }
+                    else {
+                        // nested pipeline
+                        const nestedPipelines = state.nestedPipelines[action.payload.root_pipeline_id] || []
+                        nestedPipelines.push(action.payload.data)                        
+                        state.nestedPipelines[action.payload.root_pipeline_id] = nestedPipelines
+                    }
                     break;
                 }
                 case 'TASK_FINISHED': {
                     const pipeline = state.pipelines[action.payload.root_pipeline_id]
-                    markTaskStatus(action.payload.task_id, action.payload.status, pipeline)
+                    const nestedPipelines = state.nestedPipelines[action.payload.root_pipeline_id] || []
+                    const pipelines = [pipeline].concat(nestedPipelines)
+                    
+                    pipelines.forEach(p => markTaskStatus(action.payload.task_id, action.payload.status, p))
+                    
                     break;
                 }
                 case 'TASK_SKIPPED': {
-                    console.log("SKIPPED")
                     const pipeline = state.pipelines[action.payload.root_pipeline_id]
-                    markTaskStatus(action.payload.task_id, 'SKIPPED', pipeline)
+                    const nestedPipelines = state.nestedPipelines[action.payload.root_pipeline_id] || []
+                    const pipelines = [pipeline].concat(nestedPipelines)
+
+                    pipelines.forEach(p => markTaskStatus(action.payload.task_id, 'SKIPPED', p))
                     break;
                 }
                 case 'PIPELINE_STATUS': {
-                    const pipeline = state.pipelines[action.payload.root_pipeline_id]
+                    const pipeline = state.pipelines[action.payload.pipeline_id]
                     markAllPendingTaskStatuses(action.payload.status, pipeline)
                     break
                 }
@@ -98,14 +114,20 @@ const workflowsSlice = createSlice({
         },
         resetWorkflow(state, action) {
             state.pipelines[action.payload] = []
+            state.nestedPipelines[action.payload] = []
             state.results[action.payload] = null
             state.status[action.payload] = null
         }
     },
     extraReducers: (builder) => {
         builder.addCase(runWorkflow.pending, (state, action) => {
-            state.isRunning = true
+        
+            state.pipelines[action.meta.arg.id] = []
+            state.nestedPipelines[action.meta.arg.id] = []
             state.results[action.meta.arg.id] = null
+            state.status[action.payload] = null
+
+            state.isRunning = true
         })
 
         builder.addCase(runWorkflow.fulfilled, (state, action) => {

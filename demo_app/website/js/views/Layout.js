@@ -14,6 +14,7 @@ import TaskRetry from './features/10_task_retry'
 import Exceptionally from './features/11_exceptionally'
 import CleanupWithFinally from './features/12_cleanup_with_finally'
 import FlowControl from './features/13_flow_control'
+import NestedWorkflows from './features/14_nested_workflows'
 
 
 export default function Layout() {
@@ -51,6 +52,7 @@ export default function Layout() {
             <Exceptionally />
             <CleanupWithFinally />
             <FlowControl />
+            <NestedWorkflows />
             
         </main>
         <footer className="footer mt-auto py-3 bg-light">

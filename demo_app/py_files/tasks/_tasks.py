@@ -68,3 +68,20 @@ async def handle_error(task_exception, return_value=None):
 @tasks.bind()
 async def cleanup(*args):
     await asyncio.sleep(1)  
+
+
+@tasks.bind()
+async def multiply_and_append(a, b):
+    await asyncio.sleep(0.5)
+    return a + [a[-1] * b]
+
+
+@tasks.bind()
+async def generate_series(start, scale, length):
+    await asyncio.sleep(1) 
+    pipeline = multiply_and_append.send([start], scale)
+
+    for _ in range(length - 1):
+        pipeline.continue_with(multiply_and_append, scale)
+
+    return pipeline
