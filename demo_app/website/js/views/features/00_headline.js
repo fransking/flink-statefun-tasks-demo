@@ -11,17 +11,7 @@ async def multiply(a, b):
   await asyncio.sleep(1)
   return a * b
 
-@tasks.bind()
-async def sum_all(*items):
-    await asyncio.sleep(1)
-    return sum(*items)
-
-pipeline = in_parallel([
-    multiply.send(3, 2), 
-    multiply.send(3, 2).continue_with(multiply, 10).continue_with(multiply, 2),
-    multiply.send(4, 2).continue_with(multiply, 10),
-    multiply.send(5, 2)
-]).continue_with(sum_all)
+pipeline = multiply.send(3, 2).continue_with(multiply, 10).continue_with(multiply, 2)
 
 result = await flink_client.submit_async(pipeline)
 print(result)
@@ -36,7 +26,7 @@ print(result)
                 <div className="d-flex flex-column px-3 col-lg-6"><code><pre>{code}</pre></code></div>
 
                 <div className="col-lg-6">
-                    <Feature.Showcase hr={false} id={uuidv4()} api="/api/task_chains_and_groups/" template={[{a: [[1], [2, 22 , 23], [3, 33], [4]]}, 10]} />
+                    <Feature.Showcase hr={false} id={uuidv4()} api="/api/task_chaining/" template={[1, 2, 3]} />
                 </div>
             </div>
         </div>
