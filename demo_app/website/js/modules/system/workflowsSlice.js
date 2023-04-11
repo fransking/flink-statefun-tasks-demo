@@ -14,7 +14,7 @@ export const runWorkflow = createAsyncThunk('runWorkflow', async (data) => {
 })
 
 
-const markTaskComplete = (task_id, status, pipeline) => {
+const markTaskStatus = (task_id, status, pipeline) => {
     if (!pipeline) {
         return
     }
@@ -23,7 +23,7 @@ const markTaskComplete = (task_id, status, pipeline) => {
         if (taskOrGroup.type === 'group') {
             
             taskOrGroup.tasks.forEach(chain => {
-                markTaskComplete(task_id, status, chain)
+                markTaskStatus(task_id, status, chain)
             })
 
         } else if (taskOrGroup.type === 'task' && taskOrGroup.id === task_id) {
@@ -32,6 +32,27 @@ const markTaskComplete = (task_id, status, pipeline) => {
     })
 } 
 
+const markAllPendingTaskStatuses = (status, pipeline) => {
+    if (!pipeline) {
+        return
+    }
+
+    pipeline.forEach(taskOrGroup => {
+        if (taskOrGroup.type === 'group') {
+            
+            taskOrGroup.tasks.forEach(chain => {
+                markAllPendingTaskStatuses(status, chain)
+            })
+
+        } else if (taskOrGroup.type === 'task') {
+            const currentStatus = taskOrGroup['status']
+
+            if (!['COMPLETED', 'FAILED', 'SKIPPED'].includes(currentStatus)) {
+                taskOrGroup['status'] = status
+            } 
+        }
+    })
+} 
 
 const workflowsSlice = createSlice({
     name: 'workflows',
@@ -39,11 +60,11 @@ const workflowsSlice = createSlice({
         isRunning: false,
         subscriptions: {},
         pipelines: {},
-        results: {}
+        results: {},
+        status: {}
     },
     reducers: {
         onTaskEvent(state, action) {
-
             switch (action.payload.type) {
                 case 'WS_SUBSCRIBED': {
                     state.subscriptions[action.payload.topic] = true
@@ -55,17 +76,30 @@ const workflowsSlice = createSlice({
                 }
                 case 'PIPELINE_CREATED': {
                     state.pipelines[action.payload.root_pipeline_id] = action.payload.data
+                    break;
                 }
                 case 'TASK_FINISHED': {
                     const pipeline = state.pipelines[action.payload.root_pipeline_id]
-                    markTaskComplete(action.payload.task_id, action.payload.status, pipeline)
+                    markTaskStatus(action.payload.task_id, action.payload.status, pipeline)
+                    break;
                 }
-                break
+                case 'TASK_SKIPPED': {
+                    console.log("SKIPPED")
+                    const pipeline = state.pipelines[action.payload.root_pipeline_id]
+                    markTaskStatus(action.payload.task_id, 'SKIPPED', pipeline)
+                    break;
+                }
+                case 'PIPELINE_STATUS': {
+                    const pipeline = state.pipelines[action.payload.root_pipeline_id]
+                    markAllPendingTaskStatuses(action.payload.status, pipeline)
+                    break
+                }
             }            
         },
         resetWorkflow(state, action) {
             state.pipelines[action.payload] = []
             state.results[action.payload] = null
+            state.status[action.payload] = null
         }
     },
     extraReducers: (builder) => {

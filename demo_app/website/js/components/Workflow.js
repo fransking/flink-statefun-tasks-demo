@@ -18,6 +18,11 @@ const TaskChain = ({items}) => {
                     break;
                 }
 
+                case "PAUSED": {
+                    rows.push((<td key={item.id}><i className="demo-task bi bi-dash-square-dotted"></i></td>))
+                    break;
+                }
+
                 default: {
                     rows.push((<td key={item.id}><i className="demo-task bi bi-dash-square"></i></td>))
                     break;

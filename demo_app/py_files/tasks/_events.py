@@ -1,5 +1,6 @@
 from statefun_tasks import FlinkTasks
-from statefun_tasks import Group
+from statefun_tasks.messages_pb2 import Pipeline
+from statefun_tasks.messages_pb2 import TaskStatus
 from kafka import KafkaProducer
 import logging
 import json
@@ -28,6 +29,34 @@ class Events(object):
                 'task_id': context.get_task_id(),
                 'type': 'TASK_FINISHED',
                 'status': 'COMPLETED' if task_result is not None else 'FAILED'
+            }
+            
+            producer.send(topic=self._kakfa_web_sockets_topic, value=msg)
+
+        @tasks.events.on_pipeline_tasks_skipped
+        def on_pipeline_tasks_skipped(context, skipped_tasks):
+            root_pipeline_id = context.get_root_pipeline_id() or context.get_task_id()
+
+            for task_id in skipped_tasks:
+                msg = {
+                    'topic': f'task_events.{root_pipeline_id}',
+                    'root_pipeline_id': root_pipeline_id,
+                    'task_id': task_id.task_id,
+                    'type': 'TASK_SKIPPED'                
+                }
+                
+                producer.send(topic=self._kakfa_web_sockets_topic, value=msg)
+
+        @tasks.events.on_pipeline_status_changed
+        def on_pipeline_status_changed(context, pipeline: Pipeline, status: TaskStatus):
+            root_pipeline_id = context.get_root_pipeline_id() or context.get_task_id()
+
+            msg = {
+                'topic': f'task_events.{root_pipeline_id}',
+                'root_pipeline_id': root_pipeline_id,
+                'pipeline_id': context.get_task_id(),
+                'type': 'PIPELINE_STATUS',
+                'status': TaskStatus.Status.Name(status)
             }
             
             producer.send(topic=self._kakfa_web_sockets_topic, value=msg)

@@ -6,7 +6,15 @@ export default function Headline() {
 
     const code = 
 `
-from statefun_tasks import in_parallel
+@tasks.bind()
+async def multiply(a, b):
+  await asyncio.sleep(1)
+  return a * b
+
+@tasks.bind()
+async def sum_all(*items):
+    await asyncio.sleep(1)
+    return sum(*items)
 
 pipeline = in_parallel([
     multiply.send(3, 2), 

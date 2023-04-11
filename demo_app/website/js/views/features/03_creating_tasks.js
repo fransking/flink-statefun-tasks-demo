@@ -13,7 +13,8 @@ export default function ExampleFeature() {
 {
 `
 @tasks.bind()
-def multiply(a, b):
+async def multiply(a, b):
+  await asyncio.sleep(1)
   return a * b
 
 print(multiply(3, 2))
