@@ -1,4 +1,4 @@
-statefun-tasks
+statefun-tasks >= 0.9.91
 aiohttp
 aiohttp_cors
 gunicorn
