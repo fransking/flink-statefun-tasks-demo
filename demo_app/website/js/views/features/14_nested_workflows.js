@@ -8,7 +8,9 @@ export default function ExampleFeature() {
     <div>
       <Feature title="Nested workflows">
         <Feature.Blurb>
-          
+          Tasks that return workflows become orchestrators in their own right. 
+          The result of an orchestration task is the result of the associated workflow.
+          See the <a href="https://fransking.github.io/flink-statefun-tasks/pipelines.html#orchestrator-tasks" target="_blank">documentation</a> for further examples.
         </Feature.Blurb>
         <Feature.Code>
 {
