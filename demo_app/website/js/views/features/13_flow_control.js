@@ -17,11 +17,12 @@ export default function ExampleFeature() {
 `
 pipeline = multiply.send(3, 2).wait().continue_with(multiply, 5).continue_with(multiply, 10)
 
-future = flink_client.submit(pipeline)
+future = asyncio.ensure_future(_submit_and_return(pipeline, request))
 await asyncio.sleep(3)
-await flink_client.resume_pipeline_async(pipeline)
+await flink.unpause_pipeline_async(pipeline)
 
-print(future.result())
+result = await future
+print(result)
 `
 }
         </Feature.Code>
