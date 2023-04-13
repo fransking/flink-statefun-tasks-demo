@@ -5,7 +5,7 @@ import subComponents from '../utils/subComponents';
 import { wsSubscribe } from '../utils/webSockets'
 import Workflow from './Workflow';
 
-const Feature = ({children, title}) => {
+const Feature = ({children, title, video}) => {
     const [blurb, code, showcase] = subComponents(children, [Feature.Blurb, Feature.Code, Feature.Showcase])
 
     return (
@@ -18,6 +18,14 @@ const Feature = ({children, title}) => {
                 <div className="d-flex flex-column px-3 col-lg-6 px-4">{code}</div>
                 {showcase}
             </div>
+
+            {video && 
+                <div class="ratio ratio-16x9">
+                    <video controls crossorigin="anonymous" preload="metadata">
+                        <source src={video} type="video/mp4" />
+                    </video>
+                </div>
+            }
         </div>
     );
 };

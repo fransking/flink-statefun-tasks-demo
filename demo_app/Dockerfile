@@ -7,6 +7,7 @@ RUN pip install -r /app/requirements.txt
 
 COPY py_files/ /app/py_files/
 COPY website/dist/ /app/website/
+COPY website/assets/ /app/website/assets/
 
 ENV KAFKA_URL=kafka:9092
 ENV KAFKA_REQUEST_INGRESS_TOPIC=statefun.tasks.demo.requests
