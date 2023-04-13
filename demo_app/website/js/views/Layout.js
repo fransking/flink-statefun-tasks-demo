@@ -15,6 +15,7 @@ import Exceptionally from './features/11_exceptionally'
 import CleanupWithFinally from './features/12_cleanup_with_finally'
 import FlowControl from './features/13_flow_control'
 import NestedWorkflows from './features/14_nested_workflows'
+import InlineTasks from './features/15_inline_tasks'
 
 
 export default function Layout() {
@@ -53,6 +54,7 @@ export default function Layout() {
             <CleanupWithFinally />
             <FlowControl />
             <NestedWorkflows />
+            <InlineTasks />
             
         </main>
         <footer className="footer mt-auto py-3 bg-light">

@@ -1,5 +1,7 @@
 from py_files import WebSockets
 from py_files.api import api_routes
+from py_files.tasks import tasks
+from py_files.tasks import enable_inline_tasks
 
 from aiohttp import web
 import aiohttp_cors
@@ -42,6 +44,8 @@ async def app():
 
     for route in list(web_app.router.routes()):
         cors.add(route)
+
+    enable_inline_tasks(tasks)
 
     return web_app
 

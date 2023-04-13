@@ -20,6 +20,13 @@ data:
               functions: demo/worker
               urlPathTemplate: http://demo-app-worker:8085
               maxNumBatchRequests: 1000
+        - endpoint:
+            meta:
+              kind: http
+            spec:
+              functions: demo/restricted_worker
+              urlPathTemplate: http://demo-app-restricted-worker:8085
+              maxNumBatchRequests: 1000
         ingresses:
           - ingress:
               meta:

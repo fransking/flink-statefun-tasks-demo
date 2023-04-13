@@ -1,4 +1,6 @@
 from ._events import Events
+from ._inline import enable_inline_tasks
+from ._inline import inline_task
 from ._tasks import tasks
 from ._tasks import default_namespace
 from ._tasks import default_worker_name

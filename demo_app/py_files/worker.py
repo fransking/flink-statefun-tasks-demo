@@ -1,5 +1,8 @@
-from py_files.tasks import tasks, default_namespace, default_worker_name
+from py_files.tasks import tasks
+from py_files.tasks import default_namespace
+from py_files.tasks import default_worker_name
 from py_files.tasks import Events
+from py_files.tasks import enable_inline_tasks
 
 from statefun import StatefulFunctions
 from statefun import RequestReplyHandler
@@ -20,7 +23,6 @@ routes = web.RouteTableDef()
 functions = StatefulFunctions()
 handler = RequestReplyHandler(functions)
 
-
 @functions.bind(f'{default_namespace}/{default_worker_name}', specs=tasks.value_specs())
 async def worker(context, message):
     try:
@@ -38,7 +40,8 @@ async def handle(request):
     return web.Response(body=response_data, content_type='application/octet-stream')
 
 
-async def app():
+def app(inline_tasks_enabled=False):
+
     _configure_logging(logging.INFO)
     _log.info("Starting Demo App Worker")
 
@@ -47,6 +50,9 @@ async def app():
 
     web_app = web.Application()
     web_app.add_routes(routes)
+
+    if inline_tasks_enabled:
+        enable_inline_tasks(tasks)
 
     return web_app
 
