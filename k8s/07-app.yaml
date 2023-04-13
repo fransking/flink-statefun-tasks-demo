@@ -48,9 +48,8 @@ metadata:
       app: demo-app
       component: worker
 spec:
-  #type: NodePort
   ports:
-    - name: webui
+    - name: worker-api
       port: 8085
   selector:
       app: demo-app
@@ -80,3 +79,47 @@ spec:
         imagePullPolicy: Always
         ports:
           - containerPort: 8085
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-app-restricted-worker
+  namespace: flink-statefun-tasks-demo
+  labels:
+      app: demo-app
+      component: restricted-worker
+spec:
+  ports:
+    - name: restricted-worker-api
+      port: 8085
+  selector:
+      app: demo-app
+      component: restricted-worker
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app-restricted-worker
+  namespace: flink-statefun-tasks-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-app
+      component: restricted-worker
+  template:
+    metadata:
+      labels:
+        app: demo-app
+        component: restricted-worker
+    spec:
+      containers:
+      - name: restricted-worker
+        image: fransking/flink-demo-app:latest
+        args: ["worker", "inline_tasks_enabled=True"]
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8085
+        env:
+          - name: FLINK_WORKER_NAME
+            value: "restricted_worker"

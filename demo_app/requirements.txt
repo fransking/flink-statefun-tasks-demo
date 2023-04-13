@@ -1,4 +1,5 @@
-statefun-tasks >= 0.9.91
+statefun-tasks >= 0.9.92
 aiohttp
 aiohttp_cors
 gunicorn
+cloudpickle

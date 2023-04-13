@@ -1,4 +1,5 @@
 from py_files import create_flink_client
+from py_files.tasks import inline_task
 from py_files.tasks import multiply
 from py_files.tasks import divide
 from py_files.tasks import sum_all
@@ -165,4 +166,15 @@ async def task_failure_with_finally(request):
 @api_routes.post('/api/nested_workflows/{id}')
 async def nested_workflows(request):
     pipeline = multiply.send(1, 2).continue_with(generate_series, 2, 4).continue_with(sum_all)
+    return await _submit_and_return(pipeline, request)
+
+
+@api_routes.post('/api/inline_tasks/{id}')
+async def inline_tasks(request):
+
+    @inline_task(worker_name='restricted_worker')
+    def add(a, b):
+        return a + b
+    
+    pipeline = add.send(1, 2)
     return await _submit_and_return(pipeline, request)
