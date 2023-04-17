@@ -17,7 +17,7 @@ export default function ExampleFeature() {
 `
 pipeline = multiply.send(3, 2).wait().continue_with(multiply, 5).continue_with(multiply, 10)
 
-future = asyncio.ensure_future(_submit_and_return(pipeline, request))
+future = asyncio.ensure_future(flink_client.submit_async(pipeline))
 await asyncio.sleep(3)
 await flink.unpause_pipeline_async(pipeline)
 
