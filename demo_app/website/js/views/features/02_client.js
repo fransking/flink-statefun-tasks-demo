@@ -8,7 +8,7 @@ export default function ExampleFeature() {
       <Feature title="Client">
         <Feature.Blurb>
           Create a <a href="https://fransking.github.io/flink-statefun-tasks/api/generated/statefun_tasks.client.FlinkTasksClientFactory.html#statefun_tasks.client.FlinkTasksClientFactory" target="_blank">FlinkTasksClient</a> matching 
-          the ingress configuation in <a href="https://github.com/fransking/flink-statefun-tasks-demo/blob/main/k8s/03-flink.yaml" target="_blank">module.yaml</a>.
+          the ingress configuation in <a href="https://github.com/fransking/flink-statefun-tasks-demo/blob/main/k8s/04-flink-config.yaml" target="_blank">module.yaml</a>.
         </Feature.Blurb>
         <Feature.Code>
 {
