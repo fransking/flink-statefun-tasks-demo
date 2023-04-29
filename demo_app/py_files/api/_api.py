@@ -9,6 +9,8 @@ from py_files.tasks import flakey_multiply
 from py_files.tasks import handle_error
 from py_files.tasks import cleanup
 from py_files.tasks import generate_series
+from py_files.tasks import increment_counter
+from py_files.tasks import get_counter
 
 from statefun_tasks import in_parallel
 from statefun_tasks.client import TaskError
@@ -28,14 +30,21 @@ flink = create_flink_client(
 )
 
 
-async def _submit_and_return(pipeline, request):
+async def _submit_and_return(pipeline, request, count=True):
     try:
-        pipeline.id = request.match_info['id']
+        if 'id' in request.match_info:
+            pipeline.id = request.match_info['id']
+
         result = await flink.submit_async(pipeline)
         return web.Response(text=json.dumps({'result': result}), content_type='application/json')
+    
     except TaskError as e:
         errors = [error.split(',')[-1] for error in e.message.split('|')]
         return web.Response(text=json.dumps({'result': errors[0] if len(errors) == 1 else errors}), content_type='application/json')
+    
+    finally:
+        if count:
+            flink.submit(increment_counter.send().set(task_id='run_counter'))  # fire and forget future
 
 
 @api_routes.post('/api/calling_a_task/{id}')
@@ -178,3 +187,9 @@ async def inline_tasks(request):
     
     pipeline = add.send(1, 2)
     return await _submit_and_return(pipeline, request)
+
+
+@api_routes.get('/api/run_count')
+async def run_count(request):
+    pipeline = get_counter.send().set(task_id='run_counter')
+    return await _submit_and_return(pipeline, request, count=False)

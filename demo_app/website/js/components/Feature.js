@@ -20,8 +20,8 @@ const Feature = ({children, title, video}) => {
             </div>
 
             {video && 
-                <div class="ratio ratio-16x9">
-                    <video controls crossorigin="anonymous" preload="metadata">
+                <div className="ratio ratio-16x9">
+                    <video controls crossrigin="anonymous" preload="metadata">
                         <source src={video} type="video/mp4" />
                     </video>
                 </div>

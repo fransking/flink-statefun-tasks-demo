@@ -3,16 +3,25 @@ import { getBaseUrl } from "../../utils/urlUtils";
 import axios from 'axios';
 
 
-export const runWorkflow = createAsyncThunk('runWorkflow', async (data) => {
+export const getWorkflowRunCount = createAsyncThunk('getWorkflowRunCount', async () => {
+    return axios.get(getBaseUrl() + "/api/run_count").then(response => {
+        return {
+            data: response.data
+        }
+    })
+})
+
+export const runWorkflow = createAsyncThunk('runWorkflow', async (data, thunkAPI) => {
     const {api, id} = data
     return axios.post(getBaseUrl() + api + id).then(response => {
+        thunkAPI.dispatch(getWorkflowRunCount());
+
         return {
             id: id,
             data: response.data
         }
     })
 })
-
 
 const markTaskStatus = (task_id, status, pipeline) => {
     if (!pipeline) {
@@ -57,6 +66,7 @@ const markAllPendingTaskStatuses = (status, pipeline) => {
 const workflowsSlice = createSlice({
     name: 'workflows',
     initialState: {
+        runCount: 0,
         isRunning: false,
         subscriptions: {},
         pipelines: {},
@@ -137,6 +147,10 @@ const workflowsSlice = createSlice({
 
         builder.addCase(runWorkflow.rejected, (state, action) => {
             state.isRunning = false
+        })
+
+        builder.addCase(getWorkflowRunCount.fulfilled, (state, action) => {
+            state.runCount = action.payload.data.result
         })
     },
 })

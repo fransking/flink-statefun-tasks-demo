@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Feature from '../../components/Feature'
 import { v4 as uuidv4 } from 'uuid'
 
 export default function ExampleFeature() {
+  const [id, _] = useState(uuidv4());
 
   return (
     <div>
@@ -23,7 +24,7 @@ print(result)
 }
         </Feature.Code>
 
-        <Feature.Showcase id={uuidv4()} api="/api/task_chaining/" template={[1, 2, 3]} />
+        <Feature.Showcase id={id} api="/api/task_chaining/" template={[1, 2, 3]} />
       </Feature>
       <div className="b-example-divider"></div>
     </div>
