@@ -26,13 +26,12 @@ export default function Layout() {
   const runCount = useSelector(state => state.workflows.runCount)
 
   useEffect(() => {
+    dispatch(getWorkflowRunCount())
     document.getElementById(decodeURI(window.location.hash?.slice(1)))?.scrollIntoView()
   }, []);
 
-  
-  useEffect(() => {
-    dispatch(getWorkflowRunCount())
-  }, []);
+
+  const runCountVisibility = runCount === '' ? "invisible" : "visible"
 
   return (
       <div className="d-flex flex-column min-vh-100">
@@ -50,7 +49,7 @@ export default function Layout() {
             </div>
 
             <div className="text-center">
-              <small className="d-inline-flex mb-3 px-2 py-1 fw-semibold text-secondary bg-secondary bg-opacity-10 border border-secondary border-opacity-10 rounded-2">{runCount} workflows runs so far</small>
+              <small className={runCountVisibility + " d-inline-flex mb-3 px-2 py-1 fw-semibold text-secondary bg-secondary bg-opacity-10 border border-secondary border-opacity-10 rounded-2"}>{runCount} workflows run so far</small>
             </div>
 
             <Headline />

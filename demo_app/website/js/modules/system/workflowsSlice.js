@@ -66,7 +66,7 @@ const markAllPendingTaskStatuses = (status, pipeline) => {
 const workflowsSlice = createSlice({
     name: 'workflows',
     initialState: {
-        runCount: 0,
+        runCount: '',
         isRunning: false,
         subscriptions: {},
         pipelines: {},
