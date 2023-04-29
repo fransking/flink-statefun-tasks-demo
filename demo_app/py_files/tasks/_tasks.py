@@ -90,3 +90,19 @@ async def generate_series(start, scale, length):
         pipeline.continue_with(multiply_and_append, scale)
 
     return pipeline
+
+
+@tasks.bind(with_context=True)
+async def increment_counter(ctx):   
+    try:
+        ctx.set_state(int(ctx.get_state()) + 1)
+    except (ValueError, TypeError):
+        ctx.set_state(1)
+
+
+@tasks.bind(with_context=True)
+async def get_counter(ctx):   
+    try:
+        return int(ctx.get_state())
+    except (ValueError, TypeError):
+        return 0

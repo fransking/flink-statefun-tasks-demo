@@ -14,3 +14,5 @@ from ._tasks import handle_error
 from ._tasks import cleanup
 from ._tasks import generate_series
 from ._tasks import multiply_and_append
+from ._tasks import increment_counter
+from ._tasks import get_counter

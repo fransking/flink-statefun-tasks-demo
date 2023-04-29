@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Feature from '../../components/Feature'
 import { v4 as uuidv4 } from 'uuid'
 
 export default function ExampleFeature() {
+  const [id1, _1] = useState(uuidv4());
+  const [id2, _2] = useState(uuidv4());
+  const [id3, _3] = useState(uuidv4());
 
   return (
     <div>
@@ -23,7 +26,7 @@ print(result)
 }
         </Feature.Code>
 
-        <Feature.Showcase id={uuidv4()} api="/api/task_failure/" template={[1, 2, 3]} />
+        <Feature.Showcase id={id1} api="/api/task_failure/" template={[1, 2, 3]} />
       </Feature>
 
       <div className="b-example-divider"></div>
@@ -48,7 +51,7 @@ print(result)
 }
         </Feature.Code>
 
-        <Feature.Showcase id={uuidv4()} api="/api/task_failure_within_group/" template={[{a: [[1], [2], [3], [4]]}, 5]} />
+        <Feature.Showcase id={id2} api="/api/task_failure_within_group/" template={[{a: [[1], [2], [3], [4]]}, 5]} />
       </Feature>
       <div className="b-example-divider"></div>
 
@@ -72,7 +75,7 @@ print(result)
 }
         </Feature.Code>
 
-        <Feature.Showcase id={uuidv4()} api="/api/task_failure_within_group_return_exceptions/" template={[{a: [[1], [2], [3], [4]]}, 5]} />
+        <Feature.Showcase id={id3} api="/api/task_failure_within_group_return_exceptions/" template={[{a: [[1], [2], [3], [4]]}, 5]} />
       </Feature>
       <div className="b-example-divider"></div>
     </div>

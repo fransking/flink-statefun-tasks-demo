@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
+import { getWorkflowRunCount } from '../modules/system/workflowsSlice'
 
 import Headline from './features/00_headline'
 import Worker from './features/01_worker'
@@ -20,8 +22,16 @@ import InlineTasks from './features/15_inline_tasks'
 
 export default function Layout() {
 
+  const dispatch = useDispatch()
+  const runCount = useSelector(state => state.workflows.runCount)
+
   useEffect(() => {
     document.getElementById(decodeURI(window.location.hash?.slice(1)))?.scrollIntoView()
+  }, []);
+
+  
+  useEffect(() => {
+    dispatch(getWorkflowRunCount())
   }, []);
 
   return (
@@ -38,7 +48,11 @@ export default function Layout() {
                 </div>
               </div>
             </div>
-            
+
+            <div className="text-center">
+              <small className="d-inline-flex mb-3 px-2 py-1 fw-semibold text-secondary bg-secondary bg-opacity-10 border border-secondary border-opacity-10 rounded-2">{runCount} workflows runs so far</small>
+            </div>
+
             <Headline />
             <Worker />
             <Client />

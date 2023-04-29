@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Feature from '../../components/Feature'
 import { v4 as uuidv4 } from 'uuid'
 
 export default function Headline() {
-
-    const code = 
+  const [id, _] = useState(uuidv4());
+  const code = 
 `
 @tasks.bind()
 async def multiply(a, b):
@@ -26,7 +26,7 @@ print(result)
                 <div className="d-flex flex-column px-3 col-lg-6"><code><pre>{code}</pre></code></div>
 
                 <div className="col-lg-6">
-                    <Feature.Showcase hr={false} id={uuidv4()} api="/api/task_chaining/" template={[1, 2, 3]} />
+                    <Feature.Showcase hr={false} id={id} api="/api/task_chaining/" template={[1, 2, 3]} />
                 </div>
             </div>
         </div>
