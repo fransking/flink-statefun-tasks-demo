@@ -61,7 +61,7 @@ metadata:
   name: demo-app-worker
   namespace: flink-statefun-tasks-demo
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: demo-app
@@ -102,7 +102,7 @@ metadata:
   name: demo-app-restricted-worker
   namespace: flink-statefun-tasks-demo
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: demo-app
