@@ -5,8 +5,8 @@ docker rm flink-demo-app-server
 docker run \
     -d \
     -e KAFKA_URL=kafka:30092 \
-    -e KAFKA_REQUEST_INGRESS_TOPIC=external.statefun.tasks.demo.requests \
-    -e KAFKA_ACTION_INGRESS_TOPIC=external.statefun.tasks.demo.actions \
+    -e KAFKA_REQUEST_INGRESS_TOPIC=statefun.tasks.demo.requests \
+    -e KAFKA_ACTION_INGRESS_TOPIC=statefun.tasks.demo.actions \
     -e FLINK_WORKER_NAMESPACE=external \
     -e FLINK_WORKER_NAME=worker \
     -e KAFKA_URL=kafka:30092 \

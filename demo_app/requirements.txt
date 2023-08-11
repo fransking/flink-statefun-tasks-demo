@@ -1,5 +1,6 @@
-statefun-tasks >= 0.9.93
+statefun-tasks >= 1.0.0-rc3
 aiohttp
 aiohttp_cors
 gunicorn
 cloudpickle
+numpy

@@ -17,7 +17,7 @@ _log = logging.getLogger(__name__)
 
 
 kakfa_url = os.environ.get('KAFKA_URL', 'kafka:30092')
-kakfa_web_sockets_topic = os.environ.get('KAFKA_WEB_SOCKETS_TOPIC', 'statefun.tasks.demo.websockets')
+kafka_events_topic = os.environ.get('KAFKA_EVENTS_TOPIC', 'statefun.tasks.demo.events')
 
 routes = web.RouteTableDef()
 functions = StatefulFunctions()
@@ -45,7 +45,7 @@ def app(inline_tasks_enabled=False):
     _configure_logging(logging.INFO)
     _log.info("Starting Demo App Worker")
 
-    events = Events(kakfa_url, kakfa_web_sockets_topic)
+    events = Events(kakfa_url, kafka_events_topic)
     events.start(tasks)
 
     web_app = web.Application()

@@ -21,6 +21,8 @@ export default function ExampleFeature() {
   tasks = FlinkTasks(
     default_namespace='demo', 
     default_worker_name='worker', 
+    embedded_pipeline_namespace='demo', 
+    embedded_pipeline_type='embedded_pipeline',
     egress_type_name='demo/kafka-generic-egress'
   )
   `
