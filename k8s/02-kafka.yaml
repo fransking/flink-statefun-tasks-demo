@@ -83,7 +83,7 @@ spec:
         - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
           value: PLAINTEXT:PLAINTEXT,PLAINTEXT_NODE_PORT:PLAINTEXT
         - name: KAFKA_CREATE_TOPICS
-          value: statefun.tasks.demo.requests:1:1,statefun.tasks.demo.actions:1:1,statefun.tasks.demo.websockets:1:1,external.statefun.tasks.demo.requests:1:1,external.statefun.tasks.demo.actions:1:1
+          value: statefun.tasks.demo.requests:1:1,statefun.tasks.demo.actions:1:1,statefun.tasks.demo.events:1:1
         image: wurstmeister/kafka
         imagePullPolicy: IfNotPresent
         name: kafka

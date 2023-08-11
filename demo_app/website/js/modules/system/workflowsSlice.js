@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { getBaseUrl } from "../../utils/urlUtils";
 import axios from 'axios';
+import { groupBy } from "../../utils/groupBy";
 
 
 export const getWorkflowRunCount = createAsyncThunk('getWorkflowRunCount', async () => {
@@ -37,6 +38,24 @@ const markTaskStatus = (task_id, status, pipeline) => {
 
         } else if (taskOrGroup.type === 'task' && taskOrGroup.id === task_id) {
             taskOrGroup['status'] = status
+        }
+    })
+} 
+
+const markTaskStatuses = (statuses, pipeline) => {
+    if (!pipeline) {
+        return
+    }
+
+    pipeline.forEach(taskOrGroup => {
+        if (taskOrGroup.type === 'group') {
+            
+            taskOrGroup.tasks.forEach(chain => {
+                markTaskStatuses(statuses, chain)
+            })
+
+        } else if (taskOrGroup.type === 'task' && taskOrGroup.id in statuses) {
+            taskOrGroup['status'] = statuses[taskOrGroup.id].status
         }
     })
 } 
@@ -107,6 +126,20 @@ const workflowsSlice = createSlice({
                     
                     break;
                 }
+                case 'TASK_FINISHED_BATCH': {
+                    const grouped = groupBy('root_pipeline_id', action.payload.items)
+                    
+                    Object.keys(grouped).forEach(pipelineId => {
+                        const pipeline = state.pipelines[pipelineId]
+                        const nestedPipelines = state.nestedPipelines[pipelineId] || []
+                        const pipelines = [pipeline].concat(nestedPipelines)
+                        const statuses = grouped[pipelineId].reduce((acc, curr) =>(acc[curr['task_id']] = curr, acc), {});
+
+                        pipelines.forEach(p => markTaskStatuses(statuses, p))
+                    });
+
+                    break;
+                }
                 case 'TASK_SKIPPED': {
                     const pipeline = state.pipelines[action.payload.root_pipeline_id]
                     const nestedPipelines = state.nestedPipelines[action.payload.root_pipeline_id] || []
@@ -116,8 +149,10 @@ const workflowsSlice = createSlice({
                     break;
                 }
                 case 'PIPELINE_STATUS': {
-                    const pipeline = state.pipelines[action.payload.pipeline_id]
-                    markAllPendingTaskStatuses(action.payload.status, pipeline)
+                    if (action.payload.status === 'PAUSED' || action.payload.status === 'RUNNING') {
+                        const pipeline = state.pipelines[action.payload.pipeline_id]
+                        markAllPendingTaskStatuses(action.payload.status, pipeline)
+                    }
                     break
                 }
             }            

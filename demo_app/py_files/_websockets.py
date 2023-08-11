@@ -1,3 +1,5 @@
+from statefun_tasks.messages_pb2 import Event, TaskStatus
+from google.protobuf.any_pb2 import Any
 from aiohttp import web
 from aiohttp import WSMsgType
 from weakref import WeakSet
@@ -13,7 +15,7 @@ _log = logging.getLogger(__name__)
 
 
 class WebSockets():
-    def __init__(self, app: web.Application, kakfa_url: str, kakfa_web_sockets_topic: str):
+    def __init__(self, app: web.Application, kakfa_url: str, kafka_events_topic: str):
         # Web socket server for clients to connect to
         self._app = app
         self._connections = WeakSet()
@@ -22,10 +24,10 @@ class WebSockets():
         self._loop = None
         
         # Kafka consumer listening for events and broadcasting to interested web socket clients
-        self._kakfa_web_sockets_topic = kakfa_web_sockets_topic
+        self._kafka_events_topic = kafka_events_topic
 
         self._consumer = KafkaConsumer(
-            kakfa_web_sockets_topic,
+            kafka_events_topic,
             bootstrap_servers=kakfa_url,
             auto_offset_reset='latest'
         )
@@ -89,7 +91,7 @@ class WebSockets():
             subscriptions = self._subscriptions.setdefault(ws, set())
             subscriptions.discard(request['topic'])
 
-        # pnng -> pong keepalive
+        # ping -> pong keepalive
         elif request['action'] == 'PING':
             _log.debug(f'ping from {source_ip}')
             await ws.send_json({'action': 'PONG'})
@@ -100,13 +102,13 @@ class WebSockets():
                 for message in self._consumer:
                     _log.debug(f'Message received - {message}')
 
-                    data = json.loads(message.value)
-                    topic = data['topic']
                     publishings = []
-
-                    for subscriber, subscriptions in self._subscriptions.items():
-                        if topic in subscriptions:
-                            publishings.append(subscriber.send_json(data))
+                    for data in self._extract_event_message(message):
+                        topic = data['topic']
+                        
+                        for subscriber, subscriptions in self._subscriptions.items():
+                            if topic in subscriptions:
+                                publishings.append(subscriber.send_json(data))
 
                     async def send(items):
                         await asyncio.gather(*items, return_exceptions=True)
@@ -115,3 +117,84 @@ class WebSockets():
 
             except Exception as ex:
                 _log.warning(f'Error in websocket kafka consumer thread - {ex}', exc_info=ex)
+
+    def _extract_event_message(self, message):
+        try:
+            # print("GOT ONE")
+            # return []
+            # print(message.value)
+            return [json.loads(message.value)]
+        except:
+            proto = Any()
+            proto.ParseFromString(message.value)
+            
+            event = Event()
+            proto.Unpack(event)
+
+            if event.HasField('pipeline_created'):
+                return self._extract_on_pipeline_created(event)
+
+            if event.HasField('pipeline_status_changed'):
+                return self._extract_on_pipeline_status_changed(event)
+
+            if event.HasField('pipeline_tasks_skipped'):
+                return self._extract_pipeline_tasks_skipped(event)
+
+            return []
+
+    @staticmethod 
+    def _extract_on_pipeline_created(event):
+        pipeline_tasks = []
+
+        def walk_graph(pipeline_entry, tasks):
+            for entry in pipeline_entry.entries:
+                if entry.HasField('group_entry'):
+                    group = {'type': 'group', 'id': entry.group_entry.group_id, 'tasks': []}
+                    
+                    for group_entry in entry.group_entry.group:
+                        chain = []
+                        walk_graph(group_entry, chain)
+                        group['tasks'].append(chain)
+                    
+                    tasks.append(group)
+
+                else:
+                    tasks.append({'type': 'task', 'id': entry.task_entry.task_id})
+
+
+        walk_graph(event.pipeline_created.pipeline, pipeline_tasks)
+
+        msg = {
+            'topic': f'task_events.{event.root_pipeline_id}',
+            'root_pipeline_id': event.root_pipeline_id,
+            'pipeline_id': event.pipeline_id,
+            'type': 'PIPELINE_CREATED',
+            'data': pipeline_tasks
+        }
+
+        return [msg]
+    
+    @staticmethod
+    def _extract_on_pipeline_status_changed(event):
+        msg = {
+            'topic': f'task_events.{event.root_pipeline_id}',
+            'root_pipeline_id': event.root_pipeline_id,
+            'pipeline_id': event.pipeline_id,
+            'type': 'PIPELINE_STATUS',
+            'status': TaskStatus.Status.Name(event.pipeline_status_changed.status.value)
+        }
+
+        return [msg]
+
+    @staticmethod
+    def _extract_pipeline_tasks_skipped(event):
+        for task in event.pipeline_tasks_skipped.tasks:
+            msg = {
+                'topic': f'task_events.{event.root_pipeline_id}',
+                'root_pipeline_id': event.root_pipeline_id,
+                'pipeline_id': event.pipeline_id,
+                'type': 'TASK_SKIPPED',
+                'task_id': task.task_id
+            }
+
+            yield msg
