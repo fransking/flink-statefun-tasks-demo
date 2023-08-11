@@ -1,7 +1,10 @@
 import { getBaseUrl } from "./urlUtils"
+import { fromEvent } from 'rxjs';
+import { filter, map, bufferTime } from 'rxjs/operators';
+import { groupBy } from "./groupBy";
 
-const wsSubscribe = (dispatch, topic, callback) => {
-    dispatch(({type: 'WS_SUBSCRIBE', topic:topic, callback: callback}))
+const wsSubscribe = (dispatch, topic, callback, buffered=false) => {
+    dispatch(({type: 'WS_SUBSCRIBE', topic:topic, callback: callback, buffered: buffered}))
 }
 
 const wsUnsubscribe = (dispatch, topic, callback) => {
@@ -14,6 +17,7 @@ const webSockets = () => {
     let websocket = null
     
     const subscriptions = {}
+    const bufferedTopics = {}
 
     const wsConnect = store => {
         websocket = new WebSocket(getBaseUrl('ws') + '/ws')
@@ -64,10 +68,28 @@ const webSockets = () => {
 
             if (data.action === 'PONG') {
                 clearTimeout(timeout)
-            } else {
+            } 
+            else if (data.type === 'TASK_FINISHED') {
+                if  (data.topic in bufferedTopics === false) {          // buffered topics will be dealt with below using RxJS
+                    store.dispatch(({type: 'WS_MESSAGE', data: data}))
+                }
+            }
+            else {
                 store.dispatch(({type: 'WS_MESSAGE', data: data}))
             }
         }
+
+        //buffered topics
+        fromEvent(websocket, 'message').pipe(
+            map(event => event.data),
+            map(data => JSON.parse(data)), 
+            filter(data => data.type === 'TASK_FINISHED' && data.topic in bufferedTopics),
+            bufferTime(250),
+            filter(items => items.length > 0),
+            map(items => groupBy('topic', items))
+        ).subscribe(items => {
+            store.dispatch(({type: 'TASK_FINISHED_BATCH', items: items}))
+        });
     }
 
     const subscribe = (store, topic) => {
@@ -108,9 +130,13 @@ const webSockets = () => {
 
             switch(action.type) {
                 case 'WS_SUBSCRIBE': {
-                    let callbacks = subscriptions[action.topic] || []
+                    const callbacks = subscriptions[action.topic] || []
                     callbacks.push(action.callback)
                     subscriptions[action.topic] = callbacks
+
+                    if (action.buffered) {
+                        bufferedTopics[action.topic] = true;
+                    }
 
                     subscribe(store, action.topic)
                 }
@@ -122,6 +148,7 @@ const webSockets = () => {
                     
                     if (callbacks.length === 0) {
                         delete subscriptions[action.topic]
+                        delete bufferedTopics[action.topic]
                         unsubscribe(store, action.topic)
                     } else {
                         subscriptions[action.topic] = callbacks
@@ -135,10 +162,19 @@ const webSockets = () => {
                 }
                 break;
 
+                case 'TASK_FINISHED_BATCH': {
+                    Object.keys(action.items).forEach(topic => {
+                        const callbacks = subscriptions[topic] || []
+                        const data = {'type': 'TASK_FINISHED_BATCH', items: action.items[topic]}
+                        callbacks.forEach(callback => invokeCallback(store, callback, data))
+                    })             
+                }
+                
+                break;
                 case 'WS_CLOSED':
                 case 'WS_TIMEOUT': {
                     Object.keys(subscriptions).forEach(topic => {
-                        let callbacks = subscriptions[topic] || []
+                        const callbacks = subscriptions[topic] || []
                         callbacks.forEach(callback => invokeCallback(store, callback, {'type': 'WS_UNSUBSCRIBED', 'topic': topic}))         
                     })
                 }

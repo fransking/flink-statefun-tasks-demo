@@ -1,9 +1,12 @@
 from statefun_tasks import FlinkTasks
 from statefun_tasks import TaskException
 from statefun_tasks import RetryPolicy
+from statefun_tasks import in_parallel
 from datetime import timedelta
+import numpy as np
 import asyncio
 import os
+import random
 import logging
 
 
@@ -12,6 +15,8 @@ _log = logging.getLogger(__name__)
 
 default_namespace = os.environ.get('FLINK_WORKER_NAMESPACE', 'external')
 default_worker_name = os.environ.get('FLINK_WORKER_NAME', 'worker')
+embedded_pipeline_namespace = os.environ.get('FLINK_EMBEDDED_PIPELINE_NAMESPACE', 'demo')
+embedded_pipeline_type = os.environ.get('FLINK_EMBEDDED_PIPELINE_TYPE', 'embedded_pipeline')
 egress_type_name = os.environ.get('FLINK_EGRESS_TYPE_NAME', 'demo/kafka-generic-egress')
 state_expiration_minutes = os.environ.get('FLINK_STATE_EXPIRATION_TIME_MINUTES', '1440') # 24 hours
 
@@ -19,6 +24,8 @@ tasks = FlinkTasks(
     default_namespace, 
     default_worker_name, 
     egress_type_name, 
+    embedded_pipeline_namespace=embedded_pipeline_namespace,
+    embedded_pipeline_type=embedded_pipeline_type,
     state_expiration=timedelta(minutes=float(state_expiration_minutes)))
 
 
@@ -90,6 +97,22 @@ async def generate_series(start, scale, length):
         pipeline.continue_with(multiply_and_append, scale)
 
     return pipeline
+
+
+@tasks.bind()
+async def generate_random_numbers(size):
+    pipeline = in_parallel([generate_random_number.send() for _ in range(size)])
+    return pipeline
+
+
+@tasks.bind()
+async def generate_random_number():
+    return random.randint(0, 10)
+
+
+@tasks.bind()
+async def average(numbers):
+    return np.mean(numbers).item()
 
 
 @tasks.bind(with_context=True)

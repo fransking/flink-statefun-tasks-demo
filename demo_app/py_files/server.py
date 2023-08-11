@@ -13,7 +13,7 @@ import logging
 
 _log = logging.getLogger(__name__)
 
-kafka_web_sockets_topic = os.environ.get('KAFKA_WEB_SOCKETS_TOPIC', 'statefun.tasks.demo.websockets')
+kafka_events_topic = os.environ.get('KAFKA_EVENTS_TOPIC', 'statefun.tasks.demo.events')
 kafka_url = os.environ.get('KAFKA_URL', 'kafka:30092')
 website_dir = os.environ.get('WEBSITE_DIR', 'website/dist')
 
@@ -34,7 +34,7 @@ async def app():
     web_app.add_routes(routes)
     web_app.add_routes(api_routes)
 
-    web_sockets = WebSockets(web_app, kafka_url, kafka_web_sockets_topic)
+    web_sockets = WebSockets(web_app, kafka_url, kafka_events_topic)
     await web_sockets.start()
 
     web_app.add_routes([web.static('/', website_dir)])

@@ -33,7 +33,7 @@ const Feature = ({children, title, video}) => {
 Feature.Code = ({children}) => <code><pre>{children}</pre></code>
 Feature.Blurb = ({children}) => <p className="lead">{children}</p>
 
-Feature.Showcase = ({id, api, template, hr=true}) => {
+Feature.Showcase = ({id, api, template, hr=true, showIndividualNestedTasks=true, buffered=false}) => {
     const dispatch = useDispatch()
     const subscriptions = useSelector(state => state.workflows.subscriptions)
     const pipelines = useSelector(state => state.workflows.pipelines)
@@ -42,7 +42,7 @@ Feature.Showcase = ({id, api, template, hr=true}) => {
     const results = useSelector(state => state.workflows.results)
 
     useEffect(() => {
-        wsSubscribe(dispatch, 'task_events.' + id, onTaskEvent)
+        wsSubscribe(dispatch, 'task_events.' + id, onTaskEvent, buffered)
     }, []);
 
     const disabled = isRunning || 'task_events.' + id in subscriptions == false
@@ -62,7 +62,7 @@ Feature.Showcase = ({id, api, template, hr=true}) => {
 
             {
                 nestedPipelines[id] && nestedPipelines[id].map((pipeline, index) => (   
-                    <Workflow key={index} items={pipeline} isNested={true} />
+                    <Workflow key={index} items={pipeline} isNested={true} showIndividualTasks={showIndividualNestedTasks} />
                 )
             )}
         </div>

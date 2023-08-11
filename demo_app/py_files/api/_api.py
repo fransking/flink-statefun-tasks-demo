@@ -9,6 +9,9 @@ from py_files.tasks import flakey_multiply
 from py_files.tasks import handle_error
 from py_files.tasks import cleanup
 from py_files.tasks import generate_series
+from py_files.tasks import sum_all
+from py_files.tasks import generate_random_numbers
+from py_files.tasks import average
 from py_files.tasks import increment_counter
 from py_files.tasks import get_counter
 
@@ -24,8 +27,8 @@ api_routes = web.RouteTableDef()
 
 flink = create_flink_client(
     kafka_broker_url=os.environ.get('KAFKA_URL', 'kafka:30092'),
-    request_topic=os.environ.get('KAFKA_REQUEST_INGRESS_TOPIC', 'external.statefun.tasks.demo.requests'),
-    action_topic=os.environ.get('KAFKA_ACTION_INGRESS_TOPIC', 'external.statefun.tasks.demo.actions'),
+    request_topic=os.environ.get('KAFKA_REQUEST_INGRESS_TOPIC', 'statefun.tasks.demo.requests'),
+    action_topic=os.environ.get('KAFKA_ACTION_INGRESS_TOPIC', 'statefun.tasks.demo.actions'),
     reply_topic=os.environ.get('KAFKA_REPLY_TOPIC', 'statefun.tasks.demo.reply'),
 )
 
@@ -186,6 +189,12 @@ async def inline_tasks(request):
         return a + b
     
     pipeline = add.send(1, 2)
+    return await _submit_and_return(pipeline, request)
+
+
+@api_routes.post('/api/large_workflows/{id}')
+async def large_workflows(request):
+    pipeline = generate_random_numbers.send(6000).continue_with(average)
     return await _submit_and_return(pipeline, request)
 
 
