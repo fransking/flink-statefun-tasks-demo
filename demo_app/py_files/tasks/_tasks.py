@@ -99,9 +99,14 @@ async def generate_series(start, scale, length):
     return pipeline
 
 
+@tasks.bind(module_name="__builtins")
+async def echo():
+    pass
+
+
 @tasks.bind()
-async def generate_random_numbers(size):
-    pipeline = in_parallel([generate_random_number.send() for _ in range(size)])
+async def generate_random_numbers(size, num_stages=1):
+    pipeline = in_parallel([generate_random_number.send() for _ in range(size)], num_stages=num_stages)
     return pipeline
 
 

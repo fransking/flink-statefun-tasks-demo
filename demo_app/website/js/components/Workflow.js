@@ -135,7 +135,7 @@ const Workflow = ({items = [], template = [], result = null, isNested = false, s
                         </tr>
                     )}
 
-                    {!showIndividualTasks && (
+                    {!showIndividualTasks && items.length === 1 && (
                         <tr>
                             <td className="w-100"><TaskChainProgress items={items} /></td>
                             <td><p className="demo-result">{formatResult(result)}</p></td>

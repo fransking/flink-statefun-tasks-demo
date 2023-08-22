@@ -48,7 +48,7 @@ def app(inline_tasks_enabled=False):
     events = Events(kakfa_url, kafka_events_topic)
     events.start(tasks)
 
-    web_app = web.Application()
+    web_app = web.Application(client_max_size=104857600)  # 100 MB
     web_app.add_routes(routes)
 
     if inline_tasks_enabled:
