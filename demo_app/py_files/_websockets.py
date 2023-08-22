@@ -15,7 +15,7 @@ _log = logging.getLogger(__name__)
 
 
 class WebSockets():
-    def __init__(self, app: web.Application, kakfa_url: str, kafka_events_topic: str):
+    def __init__(self, app: web.Application, kakfa_url: str, kafka_events_topic: str, kafka_fetch_max_bytes=1048576):
         # Web socket server for clients to connect to
         self._app = app
         self._connections = WeakSet()
@@ -26,10 +26,15 @@ class WebSockets():
         # Kafka consumer listening for events and broadcasting to interested web socket clients
         self._kafka_events_topic = kafka_events_topic
 
+        kafka_props = {
+            'fetch_max_bytes': kafka_fetch_max_bytes
+        }
+
         self._consumer = KafkaConsumer(
             kafka_events_topic,
             bootstrap_servers=kakfa_url,
-            auto_offset_reset='latest'
+            auto_offset_reset='latest',
+            **kafka_props
         )
 
         self._consumer_thread = Thread(target=self._handle_kafka_message, args=())

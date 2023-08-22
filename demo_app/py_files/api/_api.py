@@ -194,7 +194,13 @@ async def inline_tasks(request):
 
 @api_routes.post('/api/large_workflows/{id}')
 async def large_workflows(request):
-    pipeline = generate_random_numbers.send(6000).continue_with(average)
+    pipeline = generate_random_numbers.send(10000).continue_with(average)
+    return await _submit_and_return(pipeline, request)
+
+
+@api_routes.post('/api/large_workflows_num_stage/{id}')
+async def large_workflows(request):
+    pipeline = generate_random_numbers.send(20000, num_stages=2).continue_with(average)
     return await _submit_and_return(pipeline, request)
 
 

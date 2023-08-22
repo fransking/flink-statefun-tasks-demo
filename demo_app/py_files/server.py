@@ -34,7 +34,7 @@ async def app():
     web_app.add_routes(routes)
     web_app.add_routes(api_routes)
 
-    web_sockets = WebSockets(web_app, kafka_url, kafka_events_topic)
+    web_sockets = WebSockets(web_app, kafka_url, kafka_events_topic, kafka_fetch_max_bytes=52428800)
     await web_sockets.start()
 
     web_app.add_routes([web.static('/', website_dir)])

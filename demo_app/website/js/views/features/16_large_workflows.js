@@ -9,9 +9,12 @@ export default function ExampleFeature() {
     <div>
       <Feature title="Large(ish) workflows">
         <Feature.Blurb>
-          {/* Tasks that return workflows become orchestrators in their own right. 
-          The result of an orchestration task is the result of the associated workflow.
-          See the <a href="https://fransking.github.io/flink-statefun-tasks/pipelines.html#orchestrator-tasks" target="_blank">documentation</a> for further examples. */}
+          Workflows can contain thousands of tasks in a parallelism but the Flink Task Managers must be appropriately sized.  
+          <br></br><br></br>
+          <a href="https://nightlies.apache.org/flink/flink-statefun-docs-release-3.2/docs/modules/http-endpoint/#asynchronous-http-transport-beta" target="_blank">Flink Statefun</a> supports Netty for 
+          non-blocking IO but if many tens of thousands of remote functions need to be invoked by a single Task Manager concurrently this may not be enough.
+          <br></br><br></br>
+          Consider extending Flink Statefun with your own transports (e.g. to an HPC cluster). 
         </Feature.Blurb>
         <Feature.Code>
 {
@@ -29,7 +32,7 @@ async def generate_random_number():
 async def average(numbers):
     return np.mean(numbers).item()
 
-pipeline = generate_random_numbers.send(6000).continue_with(average)
+pipeline = generate_random_numbers.send(10000).continue_with(average)
 
 result = await flink_client.submit_async(pipeline)
 print(result)
