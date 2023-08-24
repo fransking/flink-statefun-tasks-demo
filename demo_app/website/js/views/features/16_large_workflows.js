@@ -12,7 +12,7 @@ export default function ExampleFeature() {
           Workflows can contain thousands of tasks in a parallelism but the Flink Task Managers must be appropriately sized.  
           <br></br><br></br>
           <a href="https://nightlies.apache.org/flink/flink-statefun-docs-release-3.2/docs/modules/http-endpoint/#asynchronous-http-transport-beta" target="_blank">Flink Statefun</a> supports Netty for 
-          non-blocking IO but if many tens of thousands of remote functions need to be invoked by a single Task Manager concurrently this may not be enough.
+          non-blocking IO but if many tens of thousands of remote functions need to be invoked concurrently by a single Task Manager, this may not be enough.
           <br></br><br></br>
           Consider extending Flink Statefun with your own transports (e.g. to an HPC cluster). 
         </Feature.Blurb>

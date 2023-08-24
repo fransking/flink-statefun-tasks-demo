@@ -120,6 +120,22 @@ async def average(numbers):
     return np.mean(numbers).item()
 
 
+@tasks.bind()
+async def generate_noops(size, num_stages=1):
+    pipeline = in_parallel([noop.send() for _ in range(size)], num_stages=num_stages)
+    return pipeline
+
+
+@tasks.bind(namespace='demo', worker_name='noop_worker')
+async def noop():
+    pass
+
+
+@tasks.bind()
+async def count(results):
+    return len(results)
+
+
 @tasks.bind(with_context=True)
 async def increment_counter(ctx):   
     try:

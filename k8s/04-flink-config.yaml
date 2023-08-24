@@ -27,7 +27,7 @@ data:
         connect: 20s
         pool_ttl: 15s
         pool_size: 1024
-        payload_max_bytes: 33554432
+        payload_max_bytes: 104857600
     ---
     kind: io.statefun.endpoints.v2/http
     spec:
@@ -40,7 +40,14 @@ data:
         connect: 20s
         pool_ttl: 15s
         pool_size: 1024
-        payload_max_bytes: 33554432
+        payload_max_bytes: 104857600
+    ---
+    kind: io.statefun.endpoints.v2/http
+    spec:
+      functions: demo/noop_worker
+      urlPathTemplate: http://dummy
+      transport:
+        type: io.statefun_tasks.transports.v1/noop
     ---
     kind: io.statefun.kafka.v1/ingress
     spec:

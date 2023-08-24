@@ -18,4 +18,7 @@ from ._tasks import generate_random_number
 from ._tasks import generate_random_numbers
 from ._tasks import average
 from ._tasks import increment_counter
+from ._tasks import generate_noops
+from ._tasks import noop
+from ._tasks import count
 from ._tasks import get_counter

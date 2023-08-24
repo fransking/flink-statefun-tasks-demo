@@ -125,9 +125,6 @@ class WebSockets():
 
     def _extract_event_message(self, message):
         try:
-            # print("GOT ONE")
-            # return []
-            # print(message.value)
             return [json.loads(message.value)]
         except:
             proto = Any()
