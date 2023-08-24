@@ -20,7 +20,7 @@ import NestedWorkflows from './features/14_nested_workflows'
 import InlineTasks from './features/15_inline_tasks'
 import LargeWorkflows from './features/16_large_workflows'
 import LargeWorkflowsNumStages from './features/17_large_workflows_num_stages'
-
+import LargerWorkflows from './features/18_larger_workflows'
 
 export default function Layout() {
 
@@ -72,6 +72,7 @@ export default function Layout() {
             <InlineTasks />
             <LargeWorkflows />
             <LargeWorkflowsNumStages />
+            <LargerWorkflows />
             
         </main>
         <footer className="footer mt-auto py-3 bg-light">

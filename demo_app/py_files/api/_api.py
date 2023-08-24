@@ -12,6 +12,8 @@ from py_files.tasks import generate_series
 from py_files.tasks import sum_all
 from py_files.tasks import generate_random_numbers
 from py_files.tasks import average
+from py_files.tasks import generate_noops
+from py_files.tasks import count
 from py_files.tasks import increment_counter
 from py_files.tasks import get_counter
 
@@ -201,6 +203,12 @@ async def large_workflows(request):
 @api_routes.post('/api/large_workflows_num_stage/{id}')
 async def large_workflows(request):
     pipeline = generate_random_numbers.send(20000, num_stages=2).continue_with(average)
+    return await _submit_and_return(pipeline, request)
+
+
+@api_routes.post('/api/larger_workflows/{id}')
+async def large_workflows(request):
+    pipeline = generate_noops.send(250000, num_stages=1).continue_with(count)
     return await _submit_and_return(pipeline, request)
 
 

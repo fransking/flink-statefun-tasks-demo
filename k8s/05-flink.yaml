@@ -40,6 +40,8 @@ data:
 
     taskmanager.state.local.root-dirs: file:///local/state/recovery
 
+    taskmanager.memory.task.off-heap.size: 512mb
+
     #==============================================================================
     # Recommended memory configurations. Users may change according to their needs.
     #==============================================================================
