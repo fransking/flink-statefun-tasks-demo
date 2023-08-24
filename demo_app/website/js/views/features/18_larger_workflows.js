@@ -14,7 +14,7 @@ export default function ExampleFeature() {
         <br></br><br></br>
         On a 4 core VM running on an i7-8700K host, the pipeline function is able to aggregate 250k results into a continuation in approximately 15 seconds or 16,666 tasks per second.
         <br></br><br></br>
-        <a href="https://github.com/sidekiq/sidekiq" target="_blank">Sidekiq's</a> benchmarks show 15,000 tasks per second for an ActiveJob and 23,500 for Sidekiq::Job.  The tests are not entirely equivalant as it is a different architecture but useful for reference.
+        On a 4 core VM running on an i7-12700K host, the pipeline function is able to aggregate 250k results into a continuation in approximately 8.5 seconds or 29,411 tasks per second.
         </Feature.Blurb>
         <Feature.Code>
 {
@@ -27,7 +27,10 @@ print(result)
 ----
 
 2023-08-24 13:05:47,439 INFO  com.sbbsystems.statefun.tasks.messagehandlers.ResultsBatchHandler [] - Processing results batch of 249,999 messages for pipeline demo/embedded_pipeline/5b45dcd2-e5e6-4555-aa00-6cb2da2dc0aa completed in 14,709 milliseconds
-`
+
+----
+
+2023-08-24 16:42:37,691 INFO  com.sbbsystems.statefun.tasks.messagehandlers.ResultsBatchHandler [] - Processing results batch of 249,999 messages for pipeline demo/embedded_pipeline/8b02be1d-0475-46ee-ae4b-9f6af194f023 completed in 8,430 milliseconds`
 }
         </Feature.Code>
 
