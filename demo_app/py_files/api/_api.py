@@ -20,6 +20,7 @@ from py_files.tasks import get_counter
 from statefun_tasks import in_parallel
 from statefun_tasks.client import TaskError
 from aiohttp import web
+import uuid
 import asyncio
 import os
 import json
@@ -38,7 +39,8 @@ flink = create_flink_client(
 async def _submit_and_return(pipeline, request, count=True):
     try:
         if 'id' in request.match_info:
-            pipeline.id = request.match_info['id']
+            uid = uuid.UUID(request.match_info['id'])  # validate passed in pipeline id
+            pipeline.id = str(uid)
 
         result = await flink.submit_async(pipeline)
         return web.Response(text=json.dumps({'result': result}), content_type='application/json')
@@ -183,13 +185,13 @@ async def nested_workflows(request):
     return await _submit_and_return(pipeline, request)
 
 
-@api_routes.post('/api/inline_tasks/{id}')
-async def inline_tasks(request):
+@inline_task(worker_name='restricted_worker')
+def add(a, b):
+    return a + b
 
-    @inline_task(worker_name='restricted_worker')
-    def add(a, b):
-        return a + b
-    
+
+@api_routes.post('/api/inline_tasks/{id}')
+async def inline_tasks(request):    
     pipeline = add.send(1, 2)
     return await _submit_and_return(pipeline, request)
 

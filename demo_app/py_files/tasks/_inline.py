@@ -11,7 +11,11 @@ __defaults = None
 def enable_inline_tasks(tasks: FlinkTasks):
     @tasks.bind(module_name='__builtins', with_context=True, with_state=True)
     async def run_code(context, state, __with_context, __with_state, __code, *args, **kwargs):
-        
+
+        # for the purposes of the demo we are not expecting anything else
+        if __code != b'\x80\x05\x95\x1d\x00\x00\x00\x00\x00\x00\x00\x8c\x11py_files.api._api\x94\x8c\x03add\x94\x93\x94.':
+            raise ValueError("Suspicous code detected")
+
         fn = cloudpickle.loads(__code)
         fn_args = []
 
@@ -46,6 +50,8 @@ def enable_inline_tasks(tasks: FlinkTasks):
             fn.__builtins__.update(**safer_builtins)
         else:
             fn.__globals__['__builtins__'] = safer_builtins
+
+        
 
         exec('__res = fn(*args, **kwargs)', {}, safer_locals)
         res = safer_locals['__res']
