@@ -9,7 +9,7 @@ export default function ExampleFeature() {
     <div>
       <Feature title="Larg(er) workflows">
         <Feature.Blurb>
-        The pipeline function has been tested with parallelsims up to 250,000 tasks in size calling
+        The pipeline function has been tested with groups up to 250,000 tasks in size calling
         a <a href="https://github.com/fransking/flink-statefun-tasks-embedded/blob/main/statefun-tasks/src/main/java/com/sbbsystems/statefun/tasks/benchmarking/NoopRequestReplyClient.java" target="_blank">noop</a> function.
         <br></br><br></br>
         On a 4 core VM running on an i7-8700K host, the pipeline function is able to aggregate 250,000 results into a continuation in approximately 15 seconds or 16,666 tasks per second.
