@@ -106,7 +106,7 @@ async def echo():
 
 @tasks.bind()
 async def generate_random_numbers(size, num_stages=1):
-    pipeline = in_parallel([generate_random_number.send() for _ in range(size)], num_stages=num_stages)
+    pipeline = in_parallel([generate_random_number.send() for _ in range(size)], num_stages=num_stages, ordered=False)
     return pipeline
 
 
@@ -122,7 +122,7 @@ async def average(numbers):
 
 @tasks.bind()
 async def generate_noops(size, num_stages=1):
-    pipeline = in_parallel([noop.send() for _ in range(size)], num_stages=num_stages)
+    pipeline = in_parallel([noop.send() for _ in range(size)], num_stages=num_stages, ordered=False)
     return pipeline
 
 
