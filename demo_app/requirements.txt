@@ -1,4 +1,4 @@
-statefun-tasks==1.1.2
+statefun-tasks==1.2.0
 aiohttp
 aiohttp_cors
 gunicorn
