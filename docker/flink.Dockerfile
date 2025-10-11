@@ -15,4 +15,4 @@ RUN mkdir -p /opt/statefun/modules/tasks
 ADD module.yaml /opt/statefun/modules/tasks
 
 RUN mkdir -p /opt/statefun/modules/embedded
-RUN wget https://github.com/fransking/flink-statefun-tasks-embedded/releases/download/1.2.0/statefun-tasks-distribution-1.2.0.jar -P /opt/statefun/modules/embedded/
+RUN wget https://github.com/fransking/flink-statefun-tasks-embedded/releases/download/1.2.1/statefun-tasks-distribution-1.2.1.jar -P /opt/statefun/modules/embedded/

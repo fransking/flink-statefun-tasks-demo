@@ -97,7 +97,7 @@ spec:
     spec:
       containers:
       - name: jobmanager
-        image: fransking/flink-statefun-tasks:3.3.0_1.2.0
+        image: fransking/flink-statefun-tasks:3.3.0_1.2.1
         imagePullPolicy: IfNotPresent
         env:
           - name: ROLE
@@ -131,7 +131,7 @@ metadata:
   name: flink-statefun-taskmanager
   namespace: flink-statefun-tasks-demo
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: flink-statefun
@@ -144,7 +144,7 @@ spec:
     spec:
       containers:
       - name: taskmanager
-        image: fransking/flink-statefun-tasks:3.3.0_1.2.0
+        image: fransking/flink-statefun-tasks:3.3.0_1.2.1
         imagePullPolicy: IfNotPresent
         env:
           - name: ROLE
