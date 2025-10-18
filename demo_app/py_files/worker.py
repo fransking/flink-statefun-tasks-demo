@@ -4,8 +4,8 @@ from py_files.tasks import default_worker_name
 from py_files.tasks import Events
 from py_files.tasks import enable_inline_tasks
 
-from statefun import StatefulFunctions
-from statefun import RequestReplyHandler
+from statefun_tasks.core.statefun import StatefulFunctions
+from statefun_tasks.core.statefun import RequestReplyHandler
 from aiohttp import web
 import sys
 import os
