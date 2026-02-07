@@ -102,7 +102,7 @@ spec:
     spec:
       containers:
       - name: jobmanager
-        image: fransking/flink-statefun-tasks:3.4-SNAPSHOT
+        image: fransking/flink-statefun-tasks:3.4.0
         imagePullPolicy: IfNotPresent
         env:
           - name: ROLE
@@ -149,7 +149,7 @@ spec:
     spec:
       containers:
       - name: taskmanager
-        image: fransking/flink-statefun-tasks:3.4-SNAPSHOT
+        image: fransking/flink-statefun-tasks:3.4.0
         imagePullPolicy: IfNotPresent
         env:
           - name: ROLE
