@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker push docker.io/fransking/flink-demo-app:1.2.4
+docker push docker.io/fransking/flink-demo-app:3.4.0
