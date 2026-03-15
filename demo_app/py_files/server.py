@@ -1,10 +1,13 @@
 from py_files import WebSockets
-from py_files.api import api_routes
+from py_files.api import router
 from py_files.tasks import tasks
 from py_files.tasks import enable_inline_tasks
 
-from aiohttp import web
-import aiohttp_cors
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from contextlib import asynccontextmanager
 
 import sys
 import os
@@ -17,37 +20,15 @@ kafka_events_topic = os.environ.get('KAFKA_EVENTS_TOPIC', 'statefun.tasks.demo.e
 kafka_url = os.environ.get('KAFKA_URL', 'kafka:30092')
 website_dir = os.environ.get('WEBSITE_DIR', 'website/dist')
 
-routes = web.RouteTableDef()
+web_sockets = WebSockets(kafka_url, kafka_events_topic, kafka_fetch_max_bytes=52428800)
 
 
-@routes.get('/')
-async def root_handler(request):
-    with open('website/index.html') as f:
-        return web.Response(body=f.read(), content_type='text/html')
-
-
-async def app():
-    _configure_logging(logging.INFO)
-    _log.info("Starting Demo App")
-
-    web_app = web.Application()
-    web_app.add_routes(routes)
-    web_app.add_routes(api_routes)
-
-    web_sockets = WebSockets(web_app, kafka_url, kafka_events_topic, kafka_fetch_max_bytes=52428800)
-    await web_sockets.start()
-
-    web_app.add_routes([web.static('/', website_dir)])
-
-    cors_defaults = {"*": aiohttp_cors.ResourceOptions(allow_credentials=True, expose_headers="*", allow_headers="*")}
-    cors = aiohttp_cors.setup(web_app, defaults=cors_defaults)
-
-    for route in list(web_app.router.routes()):
-        cors.add(route)
-
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     enable_inline_tasks(tasks)
-
-    return web_app
+    await web_sockets.start()
+    yield
+    await web_sockets.stop()
 
 
 def _configure_logging(level):
@@ -59,3 +40,30 @@ def _configure_logging(level):
     formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(name)s - %(message)s')
     handler.setFormatter(formatter)
     log.addHandler(handler)
+
+
+_configure_logging(logging.INFO)
+_log.info("Starting Demo App")
+
+app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
+
+app.include_router(router)
+app.include_router(web_sockets.router)
+
+
+@app.get("/", response_class=HTMLResponse)
+async def root_handler():
+    with open(os.path.join(website_dir, 'index.html')) as f:
+        return f.read()
+
+
+app.mount("/", StaticFiles(directory=website_dir), name="static")

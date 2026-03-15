@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "modules/*": ["website/js/modules/*"],
+      "utils/*": ["website/js/utils/*"],
+      "views/*": ["website/js/views/*"],
+      "components/*": ["website/js/components/*"]
+    }
+  },
+  "include": ["website/**/*.ts", "website/**/*.tsx"],
+  "exclude": ["node_modules", "website/dist"]
+}

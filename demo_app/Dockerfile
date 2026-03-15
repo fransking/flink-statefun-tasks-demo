@@ -1,14 +1,16 @@
-FROM python:3.10-slim
+FROM python:3.14-slim
 
 RUN mkdir /app
 
-COPY requirements.txt /app
-RUN pip install -r /app/requirements.txt
+COPY pyproject.toml /app
+RUN python -m venv /app/.venv \
+    && /app/.venv/bin/pip install --no-cache-dir /app
 
 COPY py_files/ /app/py_files/
 COPY website/dist/ /app/website/
 COPY website/assets/ /app/website/assets/
 
+ENV PATH="/app/.venv/bin:$PATH"
 ENV KAFKA_URL=kafka:9092
 ENV KAFKA_REQUEST_INGRESS_TOPIC=statefun.tasks.demo.requests
 ENV KAFKA_ACTION_INGRESS_TOPIC=statefun.tasks.demo.actions

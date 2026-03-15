@@ -1,0 +1,16 @@
+[project]
+name = "flink-statefun-tasks-demo"
+version = "1.0.0"
+description = "Flink Statefun Tasks Demo"
+requires-python = ">=3.10"
+dependencies = [
+    "statefun-tasks==3.4.0",
+    "fastapi",
+    "uvicorn[standard]",
+    "cloudpickle",
+    "numpy",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"

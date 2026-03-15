@@ -1,6 +1,0 @@
-statefun-tasks==3.4.0
-aiohttp
-aiohttp_cors
-gunicorn
-cloudpickle
-numpy

@@ -6,7 +6,8 @@ from py_files.tasks import enable_inline_tasks
 
 from statefun_tasks.core.statefun import StatefulFunctions
 from statefun_tasks.core.statefun import RequestReplyHandler
-from aiohttp import web
+from fastapi import FastAPI, Request
+from fastapi.responses import Response
 import sys
 import os
 import traceback
@@ -18,8 +19,8 @@ _log = logging.getLogger(__name__)
 
 kakfa_url = os.environ.get('KAFKA_URL', 'kafka:30092')
 kafka_events_topic = os.environ.get('KAFKA_EVENTS_TOPIC', 'statefun.tasks.demo.events')
+inline_tasks_enabled = os.environ.get('INLINE_TASKS_ENABLED', '').lower() in ('true', '1', 'yes')
 
-routes = web.RouteTableDef()
 functions = StatefulFunctions()
 handler = RequestReplyHandler(functions)
 
@@ -32,31 +33,6 @@ async def worker(context, message):
         traceback.print_exc()
 
 
-@routes.post('/')
-async def handle(request):
-    handler = RequestReplyHandler(functions)
-    request_data = await request.read()
-    response_data = await handler.handle_async(request_data)
-    return web.Response(body=response_data, content_type='application/octet-stream')
-
-
-def app(inline_tasks_enabled=False):
-
-    _configure_logging(logging.INFO)
-    _log.info("Starting Demo App Worker")
-
-    events = Events(kakfa_url, kafka_events_topic)
-    events.start(tasks)
-
-    web_app = web.Application(client_max_size=104857600)  # 100 MB
-    web_app.add_routes(routes)
-
-    if inline_tasks_enabled:
-        enable_inline_tasks(tasks)
-
-    return web_app
-
-
 def _configure_logging(level):
     log = logging.getLogger()
     log.setLevel(level)
@@ -66,3 +42,22 @@ def _configure_logging(level):
     formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(name)s - %(message)s')
     handler.setFormatter(formatter)
     log.addHandler(handler)
+
+
+_configure_logging(logging.INFO)
+_log.info("Starting Demo App Worker")
+
+events = Events(kakfa_url, kafka_events_topic)
+events.start(tasks)
+
+if inline_tasks_enabled:
+    enable_inline_tasks(tasks)
+
+app = FastAPI()
+
+
+@app.post('/')
+async def handle(request: Request):
+    request_data = await request.body()
+    response_data = await handler.handle_async(request_data)
+    return Response(content=response_data, media_type='application/octet-stream')

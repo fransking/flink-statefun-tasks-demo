@@ -131,7 +131,6 @@ dmypy.json
 # website
 node_modules/
 website/dist/
-package-lock.json
 
 /scratch.txt
 /azure
