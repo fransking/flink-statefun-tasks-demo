@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { getWorkflowRunCount } from '../modules/system/workflowsSlice'
 import type { RootState } from '../modules/reducers'
@@ -27,6 +27,12 @@ export default function Layout() {
 
   const dispatch = useDispatch()
   const runCount = useSelector((state: RootState) => state.workflows.runCount)
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark')
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light')
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light')
+  }, [darkMode])
 
   useEffect(() => {
     dispatch(getWorkflowRunCount())
@@ -38,6 +44,16 @@ export default function Layout() {
 
   return (
       <div className="d-flex flex-column min-vh-100">
+        <nav className="theme-toggle-bar">
+          <button
+            className="theme-toggle-btn"
+            onClick={() => setDarkMode(d => !d)}
+            aria-label="Toggle light/dark mode"
+            title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            <i className={darkMode ? 'bi bi-sun-fill' : 'bi bi-moon-fill'} />
+          </button>
+        </nav>
         <main className="flex-shrink-0">
             <div className="px-3 px-md-4 py-2 my-3 my-md-5 text-center">
               <h1 className="display-5 fw-bold">Stateful Tasks and Workflows on Apache Flink</h1>
