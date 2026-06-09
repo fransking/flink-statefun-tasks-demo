@@ -13,10 +13,10 @@
     "isolatedModules": true,
     "noEmit": true,
     "paths": {
-      "modules/*": ["website/src/modules/**"],
-      "utils/*": ["website/src/utils/**"],
-      "views/*": ["website/src/views/**"],
-      "components/*": ["website/src/components/**"]
+      "modules/*": ["./website/src/modules/*"],
+      "utils/*": ["./website/src/utils/*"],
+      "views/*": ["./website/src/views/*"],
+      "components/*": ["./website/src/components/*"]
     }
   },
   "include": ["./website/src/**/*.ts", "./website/src/**/*.tsx"],
