@@ -18,8 +18,11 @@ from statefun_tasks import in_parallel
 
 pipeline = in_parallel([
     multiply.send(3, 2), 
-    multiply.send(3, 2).continue_with(multiply, 10).continue_with(multiply, 2),
-    multiply.send(4, 2).continue_with(multiply, 10),
+    multiply.send(3, 2) \\ 
+      .continue_with(multiply, 10) \\ 
+      .continue_with(multiply, 2),
+    multiply.send(4, 2) \\
+      .continue_with(multiply, 10),
     multiply.send(5, 2)
 ]).continue_with(sum_all)
 

@@ -3,6 +3,11 @@
 $bootstrap-icons-font-dir: "bootstrap-icons/font/fonts";
 @import "bootstrap-icons/font/bootstrap-icons.scss";
 
+html {
+  scroll-behavior: smooth;
+}
+
+// Dividers
 .b-example-divider {
     height: 3rem;
     background-color: rgba(0, 0, 0, .1);
@@ -11,6 +16,7 @@ $bootstrap-icons-font-dir: "bootstrap-icons/font/fonts";
     box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
   }
 
+// Task visualization
 .demo-arrow {
   margin-right: 20px;
   vertical-align: -0.50em;
@@ -40,14 +46,202 @@ $bootstrap-icons-font-dir: "bootstrap-icons/font/fonts";
   margin-top: 0.4rem;
 }
 
-html {
-  scroll-behavior: smooth;
+// Code blocks
+.code-block {
+  background: #1e1e2e;
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  pre {
+    margin: 0;
+    white-space: pre;
+    color: #cdd6f4;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, 'Liberation Mono', monospace;
+  }
+
+  code {
+    color: inherit;
+    background: none;
+    font-size: inherit;
+  }
 }
 
-pre {
-  white-space: pre-wrap;
+// Prism syntax highlighting tokens (Catppuccin Mocha-inspired)
+.token {
+  &.keyword { color: #cba6f7; }
+  &.builtin { color: #f9e2af; }
+  &.function { color: #89b4fa; }
+  &.string { color: #a6e3a1; }
+  &.number { color: #fab387; }
+  &.boolean { color: #fab387; }
+  &.comment { color: #6c7086; font-style: italic; }
+  &.operator { color: #89dceb; }
+  &.punctuation { color: #9399b2; }
+  &.decorator { color: #f38ba8; }
+  &.class-name { color: #f9e2af; }
 }
 
-// table, th, td {
-//   border: 1px solid black;
-// }
+// Video player
+.video-player {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: #000;
+  margin-top: 1rem;
+
+  video {
+    display: block;
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  &__play-icon {
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  &__controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    opacity: 0;
+    transition: opacity 0.3s;
+
+    &--visible {
+      opacity: 1;
+    }
+  }
+
+  &__btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.25rem;
+    padding: 0.25rem;
+    cursor: pointer;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &__progress {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: height 0.15s;
+
+    &:hover {
+      height: 6px;
+    }
+  }
+
+  &__progress-bar {
+    height: 100%;
+    background: #0d6efd;
+    border-radius: 2px;
+    transition: width 0.1s linear;
+  }
+}
+
+// Mobile responsive
+@media (max-width: 991.98px) {
+  .display-5 {
+    font-size: 1.75rem;
+  }
+
+  .code-block {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+
+    pre {
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+  }
+
+  .demo-task {
+    font-size: 28px;
+    margin-right: 12px;
+  }
+
+  .demo-arrow {
+    font-size: 14px;
+    margin-right: 12px;
+    &--lg {
+      font-size: 28px;
+    }
+  }
+
+  .video-player__play-icon {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .display-5 {
+    font-size: 1.5rem;
+  }
+
+  .lead {
+    font-size: 1rem;
+  }
+
+  .code-block pre {
+    font-size: 0.7rem;
+    line-height: 1.4;
+  }
+
+  .demo-task {
+    font-size: 22px;
+    margin-right: 6px;
+  }
+
+  .demo-arrow {
+    font-size: 10px;
+    margin-right: 6px;
+    &--lg {
+      font-size: 22px;
+    }
+  }
+
+  .demo-result {
+    font-size: 1rem;
+  }
+}

@@ -39,14 +39,14 @@ export default function Layout() {
   return (
       <div className="d-flex flex-column min-vh-100">
         <main className="flex-shrink-0">
-            <div className="px-4 py-2 my-5 text-center">
+            <div className="px-3 px-md-4 py-2 my-3 my-md-5 text-center">
               <h1 className="display-5 fw-bold">Stateful Tasks and Workflows on Apache Flink</h1>
               <div className="col-lg-6 mx-auto">
                 <p className="lead mb-4">Write simple Python functions and deploy them as stateful tasks that can be chained together into workflows, making full use of Flink's state management, orchestration and fault tolerance.</p>
                 <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                  <a href="https://github.com/fransking/flink-statefun-tasks" target="_blank" className="btn btn-primary btn-lg px-4">View on Github</a>
-                  <a href="https://fransking.github.io/flink-statefun-tasks/" target="_blank" className="btn btn-outline-secondary btn-lg px-4">Read the docs</a>
-                  <a href="https://github.com/fransking/flink-statefun-tasks-demo" target="_blank" className="btn btn-outline-secondary btn-lg px-4">Get the demo</a>
+                  <a href="https://github.com/fransking/flink-statefun-tasks" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg px-4">View on Github</a>
+                  <a href="https://fransking.github.io/flink-statefun-tasks/" target="_blank" rel="noopener noreferrer" className="btn btn-outline-secondary btn-lg px-4">Read the docs</a>
+                  <a href="https://github.com/fransking/flink-statefun-tasks-demo" target="_blank" rel="noopener noreferrer" className="btn btn-outline-secondary btn-lg px-4">Get the demo</a>
                 </div>
               </div>
             </div>

@@ -21,7 +21,9 @@ export default function ExampleFeature() {
 `
 @tasks.bind()
 async def generate_random_numbers(size):
-    pipeline = in_parallel([generate_random_number.send() for _ in range(size)])
+    pipeline = in_parallel([
+      generate_random_number.send() for _ in range(size)
+    ])
     return pipeline
 
 @tasks.bind()
@@ -32,7 +34,8 @@ async def generate_random_number():
 async def average(numbers):
     return np.mean(numbers).item()
 
-pipeline = generate_random_numbers.send(10000).continue_with(average)
+pipeline = generate_random_numbers.send(10000) \\ 
+  .continue_with(average)
 
 result = await flink_client.submit_async(pipeline)
 print(result)

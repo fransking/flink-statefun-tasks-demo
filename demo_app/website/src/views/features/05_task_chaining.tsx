@@ -16,7 +16,9 @@ export default function ExampleFeature() {
         <Feature.Code>
 {
 `
-pipeline = multiply.send(3, 2).continue_with(multiply, 10).continue_with(multiply, 2)
+pipeline = multiply.send(3, 2) \\
+  .continue_with(multiply, 10) \\
+  .continue_with(multiply, 2)
 
 result = await flink_client.submit_async(pipeline)
 print(result)

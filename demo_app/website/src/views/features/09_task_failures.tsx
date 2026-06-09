@@ -43,7 +43,8 @@ pipeline = in_parallel([
     fail.send(error_message="An error occurred"),
     fail.send(error_message="Another error occurred"),
     multiply.send(5, 2)
-], max_parallelism=2).continue_with(sum_all)
+], max_parallelism=2) \\ 
+.continue_with(sum_all)
 
 result = await flink_client.submit_async(pipeline)
 print(result)
@@ -67,7 +68,8 @@ pipeline = in_parallel([
     fail.send(error_message="An error occurred"),
     fail.send(error_message="Another error occurred"),
     multiply.send(5, 2)
-], max_parallelism=2, return_exceptions=True).continue_with(sum_numbers)
+], max_parallelism=2, return_exceptions=True) \\ 
+.continue_with(sum_numbers)
 
 result = await flink_client.submit_async(pipeline)
 print(result)

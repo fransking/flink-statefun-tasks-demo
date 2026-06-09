@@ -2,16 +2,21 @@ import { getBaseUrl } from "./urlUtils"
 import { fromEvent } from 'rxjs';
 import { filter, map, bufferTime } from 'rxjs/operators';
 import { groupBy } from "./groupBy";
-import type { Middleware, Dispatch, AnyAction, MiddlewareAPI } from 'redux';
+import type { Middleware, MiddlewareAPI } from '@reduxjs/toolkit';
 
-type CallbackFn = (data: Record<string, unknown>) => AnyAction;
-
-const wsSubscribe = (dispatch: Dispatch, topic: string, callback: CallbackFn, buffered: boolean = false) => {
-    dispatch(({type: 'WS_SUBSCRIBE', topic:topic, callback: callback, buffered: buffered} as AnyAction))
+interface AppAction {
+    type: string;
+    [key: string]: unknown;
 }
 
-const wsUnsubscribe = (dispatch: Dispatch, topic: string, callback: CallbackFn) => {
-    dispatch(({type: 'WS_UNSUBSCRIBE', topic:topic, callback: callback} as AnyAction))
+type CallbackFn = (data: Record<string, unknown>) => AppAction;
+
+const wsSubscribe = (dispatch: (action: unknown) => void, topic: string, callback: CallbackFn, buffered: boolean = false) => {
+    dispatch({type: 'WS_SUBSCRIBE', topic, callback, buffered})
+}
+
+const wsUnsubscribe = (dispatch: (action: unknown) => void, topic: string, callback: CallbackFn) => {
+    dispatch({type: 'WS_UNSUBSCRIBE', topic, callback})
 }
 
 const webSockets = (): Middleware => {
@@ -129,46 +134,48 @@ const webSockets = (): Middleware => {
 
         wsConnect(store);
 
-        return (next: Dispatch) => (action: AnyAction) => {
+        return (next: (action: unknown) => unknown) => (action: unknown) => {
+            const act = action as AppAction;
 
-            switch(action.type) {
+            switch(act.type) {
                 case 'WS_SUBSCRIBE': {
-                    const callbacks = subscriptions[action.topic] || []
-                    callbacks.push(action.callback)
-                    subscriptions[action.topic] = callbacks
+                    const callbacks = subscriptions[act.topic as string] || []
+                    callbacks.push(act.callback as CallbackFn)
+                    subscriptions[act.topic as string] = callbacks
 
-                    if (action.buffered) {
-                        bufferedTopics[action.topic] = true;
+                    if (act.buffered) {
+                        bufferedTopics[act.topic as string] = true;
                     }
 
-                    subscribe(store, action.topic)
+                    subscribe(store, act.topic as string)
                 }
                 break;
                 
                 case 'WS_UNSUBSCRIBE': {
-                    let callbacks = subscriptions[action.topic] || []
-                    callbacks = callbacks.filter((el: CallbackFn) => el !== action.callback)
+                    let callbacks = subscriptions[act.topic as string] || []
+                    callbacks = callbacks.filter((el: CallbackFn) => el !== act.callback)
                     
                     if (callbacks.length === 0) {
-                        delete subscriptions[action.topic]
-                        delete bufferedTopics[action.topic]
-                        unsubscribe(store, action.topic)
+                        delete subscriptions[act.topic as string]
+                        delete bufferedTopics[act.topic as string]
+                        unsubscribe(store, act.topic as string)
                     } else {
-                        subscriptions[action.topic] = callbacks
+                        subscriptions[act.topic as string] = callbacks
                     }
                 }
                 break;
 
                 case 'WS_MESSAGE': {
-                    const callbacks = subscriptions[action.data.topic] || []
-                    callbacks.forEach((callback: CallbackFn) => invokeCallback(store, callback, action.data))                    
+                    const callbacks = subscriptions[(act.data as Record<string, unknown>).topic as string] || []
+                    callbacks.forEach((callback: CallbackFn) => invokeCallback(store, callback, act.data as Record<string, unknown>))                    
                 }
                 break;
 
                 case 'TASK_FINISHED_BATCH': {
-                    Object.keys(action.items).forEach((topic: string) => {
+                    const items = act.items as Record<string, Record<string, unknown>[]>;
+                    Object.keys(items).forEach((topic: string) => {
                         const callbacks = subscriptions[topic] || []
-                        const data = {'type': 'TASK_FINISHED_BATCH', items: action.items[topic]}
+                        const data = {'type': 'TASK_FINISHED_BATCH', items: items[topic]}
                         callbacks.forEach((callback: CallbackFn) => invokeCallback(store, callback, data))
                     })             
                 }

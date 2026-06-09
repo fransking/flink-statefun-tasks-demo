@@ -8,10 +8,10 @@ export default defineConfig({
     plugins: [react()],
     resolve: {
         alias: {
-            'modules': path.resolve(__dirname, 'website/js/modules'),
-            'utils': path.resolve(__dirname, 'website/js/utils'),
-            'views': path.resolve(__dirname, 'website/js/views'),
-            'components': path.resolve(__dirname, 'website/js/components'),
+            'modules': path.resolve(__dirname, 'website/src/modules'),
+            'utils': path.resolve(__dirname, 'website/src/utils'),
+            'views': path.resolve(__dirname, 'website/src/views'),
+            'components': path.resolve(__dirname, 'website/src/components'),
         }
     },
     build: {
@@ -19,8 +19,19 @@ export default defineConfig({
         emptyOutDir: true,
         sourcemap: true
     },
+    css: {
+        preprocessorOptions: {
+            scss: {
+                silenceDeprecations: ['color-functions', 'global-builtin', 'import', 'if-function']
+            }
+        }
+    },
     server: {
         port: 3000,
-        open: false
+        open: false,
+        host: true,
+        watch: {
+            ignored: ['**/node_modules/**', '**/dist/**']
+        }
     }
 })

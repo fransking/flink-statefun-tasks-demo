@@ -1,4 +1,5 @@
 from statefun_tasks.client import FlinkTasksClientFactory
+from statefun_tasks import DefaultSerialiser
 
 
 def create_flink_client(kafka_broker_url, request_topic, action_topic, reply_topic):
@@ -6,5 +7,6 @@ def create_flink_client(kafka_broker_url, request_topic, action_topic, reply_top
         kafka_broker_url=kafka_broker_url, 
         request_topics={None: request_topic}, 
         action_topics={None: action_topic}, 
-        reply_topic=reply_topic
+        reply_topic=reply_topic,
+        serialiser=DefaultSerialiser(use_legacy_types=True)
     )

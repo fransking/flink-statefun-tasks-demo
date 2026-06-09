@@ -31,7 +31,9 @@ async def generate_series(start, scale, length):
 
     return pipeline
 
-pipeline = multiply.send(1, 2).continue_with(generate_series, 2, 4).continue_with(sum_all)
+pipeline = multiply.send(1, 2) \\ 
+  .continue_with(generate_series, 2, 4) \\
+  .continue_with(sum_all)
 
 result = await flink_client.submit_async(pipeline)
 print(result)

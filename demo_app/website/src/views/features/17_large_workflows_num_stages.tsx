@@ -26,7 +26,8 @@ async def generate_random_numbers(size, num_stages):
     ], num_stages=num_stages)
     return pipeline
 
-pipeline = generate_random_numbers.send(20000, num_stages=2).continue_with(average)
+pipeline = generate_random_numbers.send(20000, num_stages=2) \\ 
+  .continue_with(average)
 
 result = await flink_client.submit_async(pipeline)
 print(result)

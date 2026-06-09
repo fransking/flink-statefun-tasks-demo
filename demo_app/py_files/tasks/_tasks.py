@@ -2,6 +2,7 @@ from statefun_tasks import FlinkTasks
 from statefun_tasks import TaskException
 from statefun_tasks import RetryPolicy
 from statefun_tasks import in_parallel
+from statefun_tasks import DefaultSerialiser
 from datetime import timedelta
 import numpy as np
 import asyncio
@@ -26,7 +27,8 @@ tasks = FlinkTasks(
     egress_type_name, 
     embedded_pipeline_namespace=embedded_pipeline_namespace,
     embedded_pipeline_type=embedded_pipeline_type,
-    state_expiration=timedelta(minutes=float(state_expiration_minutes)))
+    state_expiration=timedelta(minutes=float(state_expiration_minutes)),
+    serialiser=DefaultSerialiser(use_legacy_types=True))
 
 
 @tasks.bind()

@@ -15,7 +15,9 @@ export default function ExampleFeature() {
         <Feature.Code>
 {
 `
-@tasks.bind(retry_policy=RetryPolicy(retry_for=[ValueError], max_retries=2))
+@tasks.bind(retry_policy=RetryPolicy(
+  retry_for=[ValueError], max_retries=2
+))
 async def flakey_multiply(a, b):
     pass
 
