@@ -14,7 +14,7 @@ def enable_inline_tasks(tasks: FlinkTasks):
 
         # for the purposes of the demo we are not expecting anything else
         if __code != b'\x80\x05\x95\x1d\x00\x00\x00\x00\x00\x00\x00\x8c\x11py_files.api._api\x94\x8c\x03add\x94\x93\x94.':
-            raise ValueError("Suspicous code detected")
+            raise ValueError("Suspicious code detected")
 
         fn = cloudpickle.loads(__code)
         fn_args = []

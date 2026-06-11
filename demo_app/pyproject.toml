@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "Flink Statefun Tasks Demo"
 requires-python = ">=3.10"
 dependencies = [
-    "statefun-tasks==3.4.3rc0",
+    "statefun-tasks==3.4.4",
     "fastapi",
     "uvicorn[standard]",
     "cloudpickle",
