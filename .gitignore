@@ -131,8 +131,8 @@ dmypy.json
 # website
 node_modules/
 website/dist/
-package-lock.json
 
 /scratch.txt
 /azure
 /k8s/*-on-prem.yaml
+/k8s/*-on-prem.old.yaml

@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: server
-        image: fransking/flink-demo-app:3.4.0
+        image: fransking/flink-demo-app:3.4.4
         imagePullPolicy: Always
         ports:
           - containerPort: 8082
@@ -74,7 +74,7 @@ spec:
     spec:
       containers:
       - name: worker
-        image: fransking/flink-demo-app:3.4.0
+        image: fransking/flink-demo-app:3.4.4
         args: ["worker"]
         imagePullPolicy: Always
         ports:
@@ -115,11 +115,13 @@ spec:
     spec:
       containers:
       - name: restricted-worker
-        image: fransking/flink-demo-app:3.4.0
-        args: ["worker", "inline_tasks_enabled=True"]
+        image: fransking/flink-demo-app:3.4.4
+        args: ["worker"]
         imagePullPolicy: Always
         ports:
           - containerPort: 8085
         env:
           - name: FLINK_WORKER_NAME
             value: "restricted_worker"
+          - name: INLINE_TASKS_ENABLED
+            value: "true"

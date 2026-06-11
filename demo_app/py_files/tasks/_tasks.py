@@ -2,6 +2,7 @@ from statefun_tasks import FlinkTasks
 from statefun_tasks import TaskException
 from statefun_tasks import RetryPolicy
 from statefun_tasks import in_parallel
+from statefun_tasks import DefaultSerialiser
 from datetime import timedelta
 import numpy as np
 import asyncio
@@ -19,6 +20,7 @@ embedded_pipeline_namespace = os.environ.get('FLINK_EMBEDDED_PIPELINE_NAMESPACE'
 embedded_pipeline_type = os.environ.get('FLINK_EMBEDDED_PIPELINE_TYPE', 'embedded_pipeline')
 egress_type_name = os.environ.get('FLINK_EGRESS_TYPE_NAME', 'demo/kafka-generic-egress')
 state_expiration_minutes = os.environ.get('FLINK_STATE_EXPIRATION_TIME_MINUTES', '1440') # 24 hours
+use_legacy_types = os.environ.get('FLINK_USE_LEGACY_TYPES', 'true').lower() == 'true'
 
 tasks = FlinkTasks(
     default_namespace, 
@@ -26,7 +28,8 @@ tasks = FlinkTasks(
     egress_type_name, 
     embedded_pipeline_namespace=embedded_pipeline_namespace,
     embedded_pipeline_type=embedded_pipeline_type,
-    state_expiration=timedelta(minutes=float(state_expiration_minutes)))
+    state_expiration=timedelta(minutes=float(state_expiration_minutes)),
+    serialiser=DefaultSerialiser(use_legacy_types=use_legacy_types))
 
 
 @tasks.bind()

@@ -1,4 +1,4 @@
-FROM fransking/flink-statefun:3.4.2
+FROM fransking/flink-statefun-tasks:3.4.4
 
 RUN set -ex; \
     apt-get update; \
@@ -13,6 +13,3 @@ RUN echo "parallelism.default: 2" >> /opt/flink/conf/config.yaml
 
 RUN mkdir -p /opt/statefun/modules/tasks
 ADD module.yaml /opt/statefun/modules/tasks
-
-RUN mkdir -p /opt/statefun/modules/embedded
-RUN wget https://github.com/fransking/flink-statefun-tasks-embedded/releases/download/3.4.2/statefun-tasks-distribution-3.4.2.jar -P /opt/statefun/modules/embedded/

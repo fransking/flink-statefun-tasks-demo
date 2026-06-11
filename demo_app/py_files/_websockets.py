@@ -1,9 +1,6 @@
 from statefun_tasks.messages_pb2 import Event, TaskStatus
 from google.protobuf.any_pb2 import Any
-from aiohttp import web
-from aiohttp import WSMsgType
-from weakref import WeakSet
-from weakref import WeakKeyDictionary
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from kafka import KafkaConsumer
 from threading import Thread
 import asyncio
@@ -15,14 +12,15 @@ _log = logging.getLogger(__name__)
 
 
 class WebSockets():
-    def __init__(self, app: web.Application, kakfa_url: str, kafka_events_topic: str, kafka_fetch_max_bytes=1048576):
+    def __init__(self, kakfa_url: str, kafka_events_topic: str, kafka_fetch_max_bytes=1048576):
         # Web socket server for clients to connect to
-        self._app = app
-        self._connections = WeakSet()
-        self._subscriptions = WeakKeyDictionary()
-        self._app.on_shutdown.append(lambda _: self.stop())
+        self._connections = set()
+        self._subscriptions = {}
         self._loop = None
         
+        self.router = APIRouter()
+        self.router.add_api_websocket_route('/ws', self._handle_request)
+
         # Kafka consumer listening for events and broadcasting to interested web socket clients
         self._kafka_events_topic = kafka_events_topic
 
@@ -45,33 +43,36 @@ class WebSockets():
 
         self._consumer_thread.start()
         _log.info('Started web socket kafka consumer')
-
-        self._app.add_routes([web.get('/ws', self._handle_request)])
         _log.info('Started web socket server at /ws')
 
     async def stop(self):
         _log.info("Web socket server shutting down")
-        await asyncio.gather(*[ws.close() for ws in self._connections], return_exceptions=True)
+        for ws in list(self._connections):
+            try:
+                await ws.close()
+            except Exception:
+                pass
 
-    async def _handle_request(self, request):
-        source_ip = request.remote
+    async def _handle_request(self, websocket: WebSocket):
+        source_ip = websocket.client.host if websocket.client else "unknown"
         _log.info(f'Web socket connection from {source_ip}')
 
-        ws = web.WebSocketResponse()
-        await ws.prepare(request)
+        await websocket.accept()
+        self._connections.add(websocket)
 
-        self._connections.add(ws)
-
-        async for msg in ws:
-            if msg.type == WSMsgType.TEXT:
-                if msg.data == 'CLOSE':
-                    await ws.close()
-                else:
-                    await self._try_handle_message(ws, source_ip, msg.data)
-
-        _log.info(f'Web socket connection from {source_ip} closed')
-
-        return ws
+        try:
+            while True:
+                data = await websocket.receive_text()
+                if data == 'CLOSE':
+                    await websocket.close()
+                    break
+                await self._try_handle_message(websocket, source_ip, data)
+        except WebSocketDisconnect:
+            pass
+        finally:
+            self._connections.discard(websocket)
+            self._subscriptions.pop(websocket, None)
+            _log.info(f'Web socket connection from {source_ip} closed')
 
     async def _try_handle_message(self, ws, source_ip, data):
         try:
