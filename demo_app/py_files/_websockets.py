@@ -12,7 +12,7 @@ _log = logging.getLogger(__name__)
 
 
 class WebSockets():
-    def __init__(self, kakfa_url: str, kafka_events_topic: str, kafka_fetch_max_bytes=1048576):
+    def __init__(self, kakfa_url: str, kafka_events_topic: str, kafka_fetch_max_bytes=10000000):
         # Web socket server for clients to connect to
         self._connections = set()
         self._subscriptions = {}
@@ -25,6 +25,7 @@ class WebSockets():
         self._kafka_events_topic = kafka_events_topic
 
         kafka_props = {
+            'receive_message_max_bytes': kafka_fetch_max_bytes,
             'fetch_max_bytes': kafka_fetch_max_bytes
         }
 
