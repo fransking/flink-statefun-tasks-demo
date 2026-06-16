@@ -77,3 +77,4 @@ data:
         transactionTimeout: 15min
       properties:
         - max.request.size: 52428800
+        - compression.type: gzip

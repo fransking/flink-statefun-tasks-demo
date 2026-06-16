@@ -12,5 +12,6 @@ def create_flink_client(kafka_broker_url, request_topic, action_topic, reply_top
         request_topics={None: request_topic}, 
         action_topics={None: action_topic}, 
         reply_topic=reply_topic,
-        serialiser=DefaultSerialiser(use_legacy_types=use_legacy_types)
+        serialiser=DefaultSerialiser(use_legacy_types=use_legacy_types),
+        kafka_producer_properties={'compression_type': 'gzip'}
     )

@@ -5,6 +5,7 @@ from py_files.tasks import enable_inline_tasks
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
@@ -47,6 +48,7 @@ _log.info("Starting Demo App")
 
 app = FastAPI(lifespan=lifespan)
 
+app.add_middleware(GZipMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

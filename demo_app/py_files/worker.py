@@ -7,6 +7,7 @@ from py_files.tasks import enable_inline_tasks
 from statefun_tasks.core.statefun import StatefulFunctions
 from statefun_tasks.core.statefun import RequestReplyHandler
 from fastapi import FastAPI, Request
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import Response
 import sys
 import os
@@ -54,6 +55,7 @@ if inline_tasks_enabled:
     enable_inline_tasks(tasks)
 
 app = FastAPI()
+app.add_middleware(GZipMiddleware)
 
 
 @app.post('/')
