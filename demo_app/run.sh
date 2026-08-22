@@ -11,7 +11,7 @@ docker run \
     -e FLINK_WORKER_NAME=worker \
     -p 8082:8082 \
     --name flink-demo-app-server \
-    fransking/flink-demo-app:3.4.5 \
+    fransking/flink-demo-app:3.5.0 \
     server
 
 
@@ -24,5 +24,5 @@ docker run \
     -e FLINK_WORKER_NAME=worker \
     -p 8085:8085 \
     --name flink-demo-app-worker \
-    fransking/flink-demo-app:3.4.5 \
+    fransking/flink-demo-app:3.5.0 \
     worker
