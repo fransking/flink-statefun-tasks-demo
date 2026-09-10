@@ -1,4 +1,4 @@
-FROM fransking/flink-statefun-tasks:3.5.0
+FROM fransking/flink-statefun-tasks:3.5.1
 
 RUN set -ex; \
     apt-get update; \
