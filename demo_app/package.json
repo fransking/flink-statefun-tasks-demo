@@ -19,7 +19,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-redux": "^9.2.0",
-    "react-router-dom": "^6.28.0",
+    "react-router-dom": "^7.18.4",
     "rxjs": "^7.8.1",
     "sass-migrator": "^2.5.7",
     "uuid": "^11.0.0"
